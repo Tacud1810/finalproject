@@ -4,6 +4,7 @@ from datetime import datetime
 from django import forms
 from django.core.exceptions import ValidationError
 from django.core.paginator import Paginator
+from django.db.transaction import atomic
 from django.forms import ModelForm, ModelMultipleChoiceField
 from django.http import JsonResponse
 from django.shortcuts import render, redirect
@@ -375,11 +376,10 @@ def order_done(request):
     customer = request.user.person
     order, created = Order.objects.get_or_create(user=customer, complete=False)
     orderitems = order.orderitem_set.all()
-    print(order)
     order.complete = True
     order.save()
     for orderitem in orderitems:
-        rented, created = Rented.objects.get_or_create(id_book=orderitem.book, id_user=customer)
+        rented = Rented.objects.create(id_book=orderitem.book, id_user=customer, id_order=order)
         rented.save()
     return render(request, template_name="order_done.html")
 
@@ -391,25 +391,36 @@ def booked(request):
     context = {'rented_books': rented_books}
     return render(request, template_name="booked.html", context=context)
 
-
+@atomic
 def change_booked(request):
     data = json.loads(request.body)
     book_id = data['book_id']
+    order_id = data['order_id']
     action = data['action']
     customer = request.user.person
     book = Book.objects.get(id=book_id)
-    order = Order.objects.get(user=customer, complete=True, orderitem__book=book)
-    orderitem = OrderItem.objects.filter(cart=order, book=book).first()
+    order = Order.objects.filter(user=customer, complete=True, orderitem__book=book, orderitem__canceled=False).first()
+    orderitem = OrderItem.objects.filter(cart=order, book=book, canceled=False).first()
+    print(f"Orderitem: {orderitem}")
+    print(order)
 
-    rented = Rented.objects.get(id_book=book, id_user=customer)
+    rented = Rented.objects.filter(id_book=book, id_user=customer, canceled=False).first()
 
-    if action == 'cancel':
-        rented.canceled = True
-        rented.save()
-        orderitem.canceled = True
-        order.item.save()
-        book.amount += 1
-        book.save()
+    # if action == 'cancel':
+    #     rented.canceled = True
+    #     rented.save()
+    #     orderitem.canceled = True
+    #     orderitem.save()
+    #     book.amount += 1
+    #     book.save()
+    # if action == 'rent':
+    #     rented.rent_date = datetime.now()
+    #     rented.save()
+    # if action == 'return':
+    #     rented.return_date = datetime.now()
+    #     rented.save()
+    #     book.amount += 1
+    #     book.save()
 
 
     return JsonResponse('Item was changed', safe=False)
