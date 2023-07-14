@@ -1,0 +1,40 @@
+{% extends 'index.html' %}
+
+{% block content %}
+  <div class="search-result">
+    Results for "{{ pattern }}":
+  </div>
+
+  <h2>Books by czech name:</h2>
+    <ul>
+    {% for book in books_name %}
+      <li><a href="{% url 'book' book.id %}"> {{ book.name }} </a></li>
+    {% empty %}
+      <i>Nothing found</i>
+    {% endfor %}
+    </ul>
+  <h2>Books by original name:</h2>
+    <ul>
+    {% for book in books_original_name %}
+      <li><a href="{% url 'book' book.id %}">{{ book.original_name }}</a></li>
+    {% empty %}
+      <i>Nothing found</i>
+    {% endfor %}
+    </ul>
+  <h2>Books by description:</h2>
+    <ul>
+    {% for book in books_description %}
+      <li><a href="{% url 'book' book.id %}">{{ book.name }}</a></li>
+    {% empty %}
+      <i>Nothing found</i>
+    {% endfor %}
+    </ul>
+  <h2>Authors:</h2>
+    <ul>
+    {% for author in authors %}
+      <li><a href="{% url 'author' author.id %}">{{ author }}</li>
+    {% empty %}
+      <i>Nothing found</i>
+    {% endfor %}
+    </ul>
+{% endblock %}

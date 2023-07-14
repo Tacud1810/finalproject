@@ -1,0 +1,71 @@
+{% extends 'index.html' %}
+
+{% block content %}
+  <h2><span>Rented Books</span> </h2>
+  <table class="table">
+     <tr>
+       <strong>
+       <td><strong>Book name</strong></td>
+       <td><strong>User</strong></td>
+       <td><strong>Reservation</strong></td>
+       <td><strong>Rent date</strong></td>
+       <td><strong>Return date</strong></td>
+       <td><strong>Returned</strong></td>
+       </strong>
+     </tr>
+
+    {% for book in rented_books %}
+    <tr>
+      <td>{{book.id_book.name}}</td>
+      <td>{{book.id_user.username}}</td>
+      <td>{{book.reservation_date}}</td>
+      <td>{{book.rent_date}}</td>
+      <td>{{book.return_date}}</td>
+      <td>{{book.returned}}</td>
+      <td>
+        <button data-product={{book.id_book.id}} data-action="cancel" class="update-booked">
+          Cancel
+        </button>
+      </td>
+    </tr>
+    {% endfor %}
+  </table>
+
+<script>
+  var updateBtns = document.getElementsByClassName('update-booked')
+
+  for (var i = 0; i < updateBtns.length; i++){
+    updateBtns[i].addEventListener('click', function (){
+        var book_id = this.dataset.product
+        var action = this.dataset.action
+        console.log('BookId:', book_id, 'Action: ', action)
+
+        console.log('User:', user)
+        updateBooked(book_id, action)
+    })
+  }
+function updateBooked(book_id, action){
+    console.log('Sending data...')
+
+    var url = '/change_booked/'
+
+    fetch(url, {
+        method: 'POST',
+        headers:{
+            'Content-Type': 'application/json',
+            'X-CSRFToken': csrftoken,
+        },
+        body:JSON.stringify({'book_id': book_id, 'action': action})
+    })
+        .then((response) =>{
+            return response.json()
+        })
+        .then((data) =>{
+            console.log('data: ', data)
+            location.reload()
+        })
+}
+
+</script>
+
+{% endblock %}

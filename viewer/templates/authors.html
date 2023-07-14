@@ -1,0 +1,14 @@
+{% extends 'index.html' %}
+
+{% block content %}
+  <h2><span>Autoři:</span> </h2>
+    {% for author in authors %}
+      <table class="table">
+        <tr>
+          <td class="td_bold"><a href="{% url 'author' author.id %}"> {{ author.name }} </td>
+        </tr>
+      </table>
+    {% endfor %}
+{% endblock %}
+
+

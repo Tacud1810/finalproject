@@ -1,0 +1,42 @@
+{% extends 'index.html' %}
+
+{% block content %}
+  <h2><span>{{ book.name }}</span> </h2>
+  <table class="table">
+    <tr><td rowspan="10"><img src=" {{ book.image }} " width=200px></a></td></tr>
+    <tr><td class="td_bold">Originální název:</td><td> {{ book.original_name }} </td></tr>
+    <tr><td class="td_bold">Autor:</td><td><a href="{% url 'author' book.get_author_id %}"> {{ book.get_author }} </td></tr>
+    <tr><td class="td_bold">Žánr:</td><td> {{ book.get_genre }} </td></tr>
+    <tr><td class="td_bold">Rok:</td><td> {{ book.year }} </td></tr>
+    <tr><td class="td_bold">Jazyk:</td><td> {{ book.get_language }} </td></tr>
+    <tr><td class="td_bold">Stránek:</td><td> {{ book.page }} </td></tr>
+    <tr><td class="td_bold">ISBN:</td><td> {{ book.isbn }} </td></tr>
+    <tr>
+      <td>
+        {% if user.is_authenticated %}
+          {% if book.amount > 0 %}
+            <button data-product={{book.id}} data-action="add" class="update-cart">
+              Borrow
+            </button>
+          {% else %}
+            <button data-product={{book.id}} data-action="reserve" class="update-cart">
+              Reserve
+            </button>
+          {% endif %}
+        {% else %}
+          You have to be <button >Login</button>
+        {% endif %}
+      </td>
+      <td class="td_right" colspan="3">
+      <a href="{% url 'book_update' book.id %}">edit</a>
+      <a href="{% url 'book_delete' book.id %}">delete</a></td></tr>
+  </table><hr>
+
+  <table class="table">
+    <tr>
+      <td class="td_bold" style="width: 20px; vertical-align: top;">Popis:</td>
+      <td>{{ book.description }}</td>
+    </tr>
+  </table>
+
+{% endblock %}

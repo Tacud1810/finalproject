@@ -1,0 +1,21 @@
+{% extends 'index.html' %}
+{% block content %}
+  <h2><span>Žánry:</span></h2>
+
+  <table>
+    <tr>
+      <td><a href="{% url 'new_genre' %}">Přidat nový žánr</a></td>
+    </tr>
+  </table><hr>
+
+  {% for genre in genres %}
+    <table class="table">
+      <tr>
+        <td class="td_bold"> {{ genre.name }} </td>
+        <td class="td_right">
+          <a href="{% url 'genre_update' genre.id %}">edit</a>
+          <a href="{% url 'genre_delete' genre.id %}">delete</a></td>
+      </tr>
+    </table>
+    {% endfor %}
+{% endblock %}
