@@ -91,19 +91,36 @@
 <!-- SIDEBAR -->
         <div class="sidebar">
           <div class="gadget">
+            <script>
+              window.onload = function() {
+                var options = { day: 'numeric', month: 'long', year: 'numeric' };
+                var currentDate = new Date().toLocaleDateString('cs-CZ', options);
+                document.getElementById('datum').innerHTML = currentDate;};
+            </script>
+            <span class="date">Dnes je:</span></br>
+            <span class="date" id="datum"></span>
+            <hr width="215px" align="left">
             <h2 class="star">User Menu</h2>
             <ul class="sb_menu">
-              <li><a href="">Login In</a></li>
-              <li><a href="">Log Out</a></li>
-              <li><a href="/admin/" target="_blank">Admin page</a></li>
-              <li><a href="{% url 'new_book' %}">New book</a></li>
-              <li><a href="{% url 'authors_ad' %}">Authors (new / edit / delete)</a></li>
-              <li><a href="{% url 'genres' %}">Genres (new / edit / delete)</a></li>
-              <li><a href="{% url 'languages' %}">Languages (new / edit / delete)</a></li>
-              <li><a href="{% url 'booked' %}">Booked and rented books</a></li>
+              {% if user.is_authenticated %}
+                You are log in as: <strong> {{user}} </strong>
+                <li><a href="">Log Out</a></li>
+              {% else %}
+                You are not log in
+                <li><a href="">Login In</a></li>
+              {% endif %}
+              {% if user.is_superuser %}
+                <li><a href="/admin/" target="_blank">Admin page</a></li>
+              {% endif %}
+              {% if user.is_staff %}
+                <li><a href="{% url 'new_book' %}">New book</a></li>
+                <li><a href="{% url 'authors_ad' %}">Authors (new / edit / delete)</a></li>
+                <li><a href="{% url 'genres' %}">Genres (new / edit / delete)</a></li>
+                <li><a href="{% url 'languages' %}">Languages (new / edit / delete)</a></li>
+                <li><a href="{% url 'booked' %}">Booked and rented books</a></li>
+              {% endif %}
             </ul>
           </div>
-
 
         </div>
         <div class="clr"></div>

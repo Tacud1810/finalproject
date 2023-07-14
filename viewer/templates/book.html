@@ -27,9 +27,11 @@
           You have to be <button >Login</button>
         {% endif %}
       </td>
-      <td class="td_right" colspan="3">
-      <a href="{% url 'book_update' book.id %}">edit</a>
-      <a href="{% url 'book_delete' book.id %}">delete</a></td></tr>
+      <td class="td_right" colspan="2">
+        {% if user.is_staff %}
+          <a href="{% url 'book_update' book.id %}">edit</a>
+          <a href="{% url 'book_delete' book.id %}">delete</a></td></tr>
+        {% endif %}
   </table><hr>
 
   <table class="table">

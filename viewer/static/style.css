@@ -198,6 +198,13 @@ a.com span {
 	margin:0;
 	padding:8px 16px 8px 40px;
 }
+
+.date {
+    color: chocolate;
+    font-size:1.3em;
+    font-weight:bold;
+}
+
 ul.sb_menu, ul.ex_menu {
 	margin:0;
 	padding:0;
