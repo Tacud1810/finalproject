@@ -399,28 +399,26 @@ def change_booked(request):
     action = data['action']
     customer = request.user.person
     book = Book.objects.get(id=book_id)
-    order = Order.objects.filter(user=customer, complete=True, orderitem__book=book, orderitem__canceled=False).first()
-    orderitem = OrderItem.objects.filter(cart=order, book=book, canceled=False).first()
-    print(f"Orderitem: {orderitem}")
-    print(order)
+    order = Order.objects.filter(id=order_id, user=customer, complete=True, orderitem__book=book).first()
+    orderitem = OrderItem.objects.get(cart=order_id, book=book)
 
-    rented = Rented.objects.filter(id_book=book, id_user=customer, canceled=False).first()
+    rented = Rented.objects.get(id_order=order.id, id_book=book, id_user=customer)
 
-    # if action == 'cancel':
-    #     rented.canceled = True
-    #     rented.save()
-    #     orderitem.canceled = True
-    #     orderitem.save()
-    #     book.amount += 1
-    #     book.save()
-    # if action == 'rent':
-    #     rented.rent_date = datetime.now()
-    #     rented.save()
-    # if action == 'return':
-    #     rented.return_date = datetime.now()
-    #     rented.save()
-    #     book.amount += 1
-    #     book.save()
+    if action == 'cancel':
+        rented.canceled = True
+        rented.save()
+        orderitem.canceled = True
+        orderitem.save()
+        book.amount += 1
+        book.save()
+    if action == 'rent':
+        rented.rent_date = datetime.now()
+        rented.save()
+    if action == 'return':
+        rented.return_date = datetime.now()
+        rented.save()
+        book.amount += 1
+        book.save()
 
 
     return JsonResponse('Item was changed', safe=False)

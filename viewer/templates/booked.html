@@ -10,7 +10,6 @@
        <td><strong>Reservation</strong></td>
        <td><strong>Rent date</strong></td>
        <td><strong>Return date</strong></td>
-       <td><strong>Returned</strong></td>
        <td><strong>Canceled</strong></td>
        </strong>
      </tr>
@@ -46,7 +45,6 @@
           {% endif %}
         {% endif %}
       </td>
-      <td>{{book.returned}}</td>
       <td>
         {% if book.rent_date or book.returned_date %}
 
@@ -78,7 +76,7 @@
         updateBooked(book_id, order_id, action)
     })
   }
-function updateBooked(book_id, action, order_id){
+function updateBooked(book_id, order_id, action, ){
     console.log('Sending data...')
 
     var url = '/change_booked/'
@@ -89,7 +87,7 @@ function updateBooked(book_id, action, order_id){
             'Content-Type': 'application/json',
             'X-CSRFToken': csrftoken,
         },
-        body:JSON.stringify({'book_id': book_id, 'action': action, 'order_id': order_id, })
+        body:JSON.stringify({'book_id': book_id, 'order_id': order_id, 'action': action,})
     })
         .then((response) =>{
             return response.json()
