@@ -17,7 +17,7 @@
     {% for book in rented_books %}
     <tr>
       <td>{{book.id_book.name}}</td>
-      <td>{{book.id_user.username}}</td>
+      <td>{{book.id_user.user.username}}</td>
       <td>{{book.reservation_date}}</td>
       <td>
         {% if book.returned_date or book.canceled %}

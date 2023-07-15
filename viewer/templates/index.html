@@ -104,10 +104,10 @@
             <ul class="sb_menu">
               {% if user.is_authenticated %}
                 You are log in as: <strong> {{user}} </strong>
-                <li><a href="">Log Out</a></li>
+                <li><a href="{% url 'logout' %}">Log Out</a></li>
               {% else %}
                 You are not log in
-                <li><a href="">Login In</a></li>
+                <li><a href="{% url 'login' %}">Login In</a></li>
               {% endif %}
               {% if user.is_superuser %}
                 <li><a href="/admin/" target="_blank">Admin page</a></li>
