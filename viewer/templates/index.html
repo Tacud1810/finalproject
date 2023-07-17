@@ -2,165 +2,161 @@
 {% load static %}
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-<title>LibraryPro</title>
-<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-<!--<link href="../static/style.css" rel="stylesheet" type="text/css" />-->
-<link href="{% static 'style.css' %}" rel="stylesheet" type="text/css" />
-<script type="text/javascript" src="{% static 'js/cufon-yui.js' %}"></script>
-<script type="text/javascript" src="{% static 'js/arial.js' %}"></script>
-<script type="text/javascript" src="{% static 'js/cuf_run.js' %}"></script>
-<script type="text/javascript">
-  var user = '{{request.user}}'
+  <title>LibraryPro</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+  <!--<link href="../static/style.css" rel="stylesheet" type="text/css" />-->
+  <link href="{% static 'style.css' %}" rel="stylesheet" type="text/css" />
+  <script type="text/javascript" src="{% static 'js/cufon-yui.js' %}"></script>
+  <script type="text/javascript" src="{% static 'js/arial.js' %}"></script>
+  <script type="text/javascript" src="{% static 'js/cuf_run.js' %}"></script>
+  <script type="text/javascript">
+    var user = '{{request.user}}'
 
-  function getToken(name) {
-             let cookieValue = null;
-             if (document.cookie && document.cookie !== '') {
-                 const cookies = document.cookie.split(';');
-                 for (let i = 0; i < cookies.length; i++) {
-                     const cookie = cookies[i].trim();
-                     // Does this cookie string begin with the name we want?
-                     if (cookie.substring(0, name.length + 1) === (name + '=')) {
-                         cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                         break;
-                     }
-                 }
-             }
-             return cookieValue;
-         }
-         const csrftoken = getToken('csrftoken');
-</script>
+    function getToken(name) {
+               let cookieValue = null;
+               if (document.cookie && document.cookie !== '') {
+                   const cookies = document.cookie.split(';');
+                   for (let i = 0; i < cookies.length; i++) {
+                       const cookie = cookies[i].trim();
+                       // Does this cookie string begin with the name we want?
+                       if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                           cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                           break;
+                       }
+                   }
+               }
+               return cookieValue;
+           }
+           const csrftoken = getToken('csrftoken');
+  </script>
 </head>
 <body>
-<!-- START PAGE SOURCE -->
-<div class="main">
-  <div class="header">
-    <div class="header_resize">
-      <div class="logo">
-        <h1><a href="index.html">online<span>Library</span></a> <small>our books 4 U</small></h1>
-      </div>
-<!-- MENU -->
-      {% include 'nav_menu.html' %}
-<!--      <div class="clr"></div>-->
-<!--      <div class="menu_nav">-->
-<!--        <ul>-->
-<!--          <li><a href="{% url 'home' %}">Home</a></li>-->
-<!--          <li><a href=" {% url 'authors' %} ">Authors</a></li>-->
-<!--          <li><a href=" {% url 'books' %} ">Books</a></li>-->
-<!--          <li><a href="">Conditions</a></li>-->
-<!--          <li><a href="">Registration</a></li>-->
-<!--        </ul>-->
-<!--      </div>-->
+  <!-- START PAGE SOURCE -->
+  <div class="main">
+    <div class="header">
+      <div class="header_resize">
+        <div class="logo">
+          <h1><a href="index.html">online<span>Library</span></a> <small>our books 4 U</small></h1>
+        </div>
+  <!-- MENU -->
+        {% include 'nav_menu.html' %}
 
-<!-- SEARCH -->
-      <div class="searchform">
-        <form id="formsearch" name="formsearch" method="post" action="/search/">
-          {% csrf_token %}
-          <span>
-          <input name="editbox_search" class="editbox_search" id="editbox_search" maxlength="80" placeholder="Search: " type="text" />
-          </span>
-          <input name="button_search" src="https://www.databazeknih.cz/img/content/magnifier.svg" class="button_search" type="image" />
-        </form>
-
-      </div>
-    </div>
-  </div>
-
-  <div class="content">
-    <div class="content_resize">
-      <div class="content_resize2">
-        <div class="mainbar">
-          <div class="article">
-
-<!-- CONTENT -->
-            <div class="clr"></div>
-              {% block content %}
-                <h2><span>Novinky:</span></h2>
-                  {% for book in books %}
-                  {% if forloop.counter <= 10 %}
-                    <a href="{% url 'book' book.id %}">
-                    <img src="{{ book.image }}" width = 16% height= 140 px>
-                    </a>
-                  {% else %}
-
-                  {% endif %}
-                  {% endfor %}
-              {% endblock %}
-            </div>
-          </div>
-
-<!-- SIDEBAR -->
-        <div class="sidebar">
-          <div class="gadget">
-            <script>
-              window.onload = function() {
-                var options = { day: 'numeric', month: 'long', year: 'numeric' };
-                var currentDate = new Date().toLocaleDateString('cs-CZ', options);
-                document.getElementById('datum').innerHTML = currentDate;};
-            </script>
-            <span class="date">Dnes je:</span></br>
-            <span class="date" id="datum"></span>
-            <hr width="215px" align="left">
-            <h2 class="star">User Menu</h2>
-            <ul class="sb_menu">
-              {% if user.is_authenticated %}
-                You are log in as: <strong> {{user}} </strong>
-                <li><a href="{% url 'logout' %}">Log Out</a></li>
-              {% else %}
-                You are not log in
-                <li><a href="{% url 'login' %}">Login In</a></li>
-              {% endif %}
-              {% if user.is_superuser %}
-                <li><a href="/admin/" target="_blank">Admin page</a></li>
-              {% endif %}
-              {% if user.is_staff %}
-                <li><a href="{% url 'new_book' %}">New book</a></li>
-                <li><a href="{% url 'authors_ad' %}">Authors (new / edit / delete)</a></li>
-                <li><a href="{% url 'genres' %}">Genres (new / edit / delete)</a></li>
-                <li><a href="{% url 'languages' %}">Languages (new / edit / delete)</a></li>
-                <li><a href="{% url 'booked' %}">Booked and rented books</a></li>
-              {% endif %}
-            </ul>
-          </div>
+  <!-- SEARCH -->
+        <div class="searchform">
+          <form id="formsearch" name="formsearch" method="post" action="/search/">
+            {% csrf_token %}
+            <span>
+            <input name="editbox_search" class="editbox_search" id="editbox_search" maxlength="80" placeholder="Search: " type="text" />
+            </span>
+            <input name="button_search" src="https://www.databazeknih.cz/img/content/magnifier.svg" class="button_search" type="image" />
+          </form>
 
         </div>
+      </div>
+    </div>
+
+    <div class="content">
+      <div class="content_resize">
+        <div class="content_resize2">
+          <div class="mainbar">
+            <div class="article">
+
+  <!-- CONTENT -->
+              <div class="clr"></div>
+                {% block content %}
+                  <h2><span>Novinky:</span></h2>
+                    {% for book in books %}
+                    {% if forloop.counter <= 10 %}
+                      <a href="{% url 'book' book.id %}">
+                      <img src="{{ book.image }}" width = 16% height= 140 px>
+                      </a>
+                    {% else %}
+
+                    {% endif %}
+                    {% endfor %}
+                {% endblock %}
+              </div>
+            </div>
+
+  <!-- SIDEBAR -->
+          <div class="sidebar">
+            <div class="gadget">
+              <script>
+                window.onload = function() {
+                  var options = { day: 'numeric', month: 'long', year: 'numeric' };
+                  var currentDate = new Date().toLocaleDateString('cs-CZ', options);
+                  document.getElementById('datum').innerHTML = currentDate;};
+              </script>
+              <span class="date">Dnes je:</span></br>
+              <span class="date" id="datum"></span>
+              <hr width="215px" align="left">
+              <h2 class="star">User Menu</h2>
+              <ul class="sb_menu">
+                {% if user.is_authenticated %}
+                  You are log in as: <strong> {{user}} </strong>
+                {% else %}
+                  You should <a href="{% url 'login' %}">Log In</a> or <a href="{% url 'signup' %}">Sign Up</a>
+                {% endif %}
+                {% if user.is_superuser %}
+                  <li><a href="/admin/" target="_blank">Admin page</a></li>
+                {% endif %}
+                {% if user.is_staff %}
+                  <li><a href="{% url 'new_book' %}">New book</a></li>
+                  <li><a href="{% url 'authors_ad' %}">Authors (new / edit / delete)</a></li>
+                  <li><a href="{% url 'genres' %}">Genres (new / edit / delete)</a></li>
+                  <li><a href="{% url 'languages' %}">Languages (new / edit / delete)</a></li>
+                  <li><a href="{% url 'booked' %}">Booked and rented books</a></li>
+                {% endif %}
+              </ul>
+            </div>
+          </div>
+          <div class="clr"></div>
+        </div>
+      </div>
+    </div>
+
+  <!-- CONTENT 3-4 -->
+    <div class="fbg">
+      <div class="fbg_resize">
+        <div class="col c1">
+          <h2>Statistic</h2>
+          <table>
+            <tr><td>Total books:</td><td> {{ request.book_sum }}</td></tr>
+            <tr><td>Total authors:</td><td> {{ request.author_sum }}</td></tr>
+            <tr><td width="100em">Reserved books: </td><td> {{ request.reserved_sum }}</td></tr>
+            <tr><td>Rented books:</td><td> {{ request.rented_sum }}</td></tr>
+            <tr><td>Total users:</td><td> {{ request.person_sum }}</td></tr>
+          </table>
+        </div>
+
+        <div class="col c2">
+          <h2>Free content</h2>
+          ???
+        </div>
+
+        <div class="col c3">
+          <h2><span>Contact</span></h2>
+          <table>
+            <tr><td>Knihovna s.r.o.</td></tr>
+            <tr><td>WEB: <a href="{% url 'home' %}">www.library.cz</a></td></tr>
+            <tr><td>E-mail: <a href="">online@library.cz</a></td></tr>
+            <tr><td>Phone: +420 286 415 211, +420 774 218 247</td></tr>
+            <tr><td>Address: Na Východě 11/326, 158 00, Praha 13</td></tr>
+            <tr><td></td></tr>
+          </table>
+        </div>
+        <div class="clr"></div>
+      </div>
+
+    </div>
+    <div class="footer">
+      <div class="footer_resize">
+        <p class="lr">Copyright &copy; 2023 <a href="">SDA Python team n. 3</a> - All Rights Reserved</p>
+        <p class="lf">Design by <a href="">Jane & Karl & Richi & Martin</a></p>
         <div class="clr"></div>
       </div>
     </div>
   </div>
-
-<!-- CONTENT 3-4 -->
-  <div class="fbg">
-    <div class="fbg_resize">
-      <div class="col c1">
-        <h2><span>Content template 3</span></h2>
-        doplnit / smazat
-      </div>
-
-      <div class="col c2">
-        <h2>Content template 4</h2>
-        doplnit / smazat
-      </div>
-
-      <div class="col c3">
-        <h2><span>Contact</span></h2>
-        <p>Knihovna s.r.o.</p>
-        <p><a href="#">online@library.cz</a></p>
-        <p>Phone: +420 286 415 211, +420 774 218 247</p>
-        <p>Address: Na Východě 11/326, 158 00, Praha 13</p>
-      </div>
-      <div class="clr"></div>
-    </div>
-
-  </div>
-  <div class="footer">
-    <div class="footer_resize">
-      <p class="lr">Copyright &copy; 2023 <a href="">SDA Python team n. 3</a> - All Rights Reserved</p>
-      <p class="lf">Design by <a href="">Jane & Karl & Richi & Martin</a></p>
-      <div class="clr"></div>
-    </div>
-  </div>
-</div>
-<script type="text/javascript" src="{% static 'js/cart.js' %}"></script>
-
+  <script type="text/javascript" src="{% static 'js/cart.js' %}"></script>
 </body>
 </html>
