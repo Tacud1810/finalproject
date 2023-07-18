@@ -162,6 +162,13 @@ a.com span {
 	padding:8px 24px 8px 16px;
 }
 
+.article #id_name, #id_original_name, #id_genre, #id_year, #id_language, #id_author, #id_image, #id_description,
+#id_page, #id_isbn, #id_amount, #id_birth_date, #id_country, #id_username, #id_first_name, #id_last_name,
+#id_email, #id_password1, #id_password2, #id_password {
+	width: 22em;
+	background-color: #ddd5ba;
+}
+
 .article table{
 	background-color:#C7B67B;
 	width: 38rem;

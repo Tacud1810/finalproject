@@ -7,7 +7,9 @@
   <div class='login-form'>
     <form method='post'>
       {% csrf_token %}
-      {{ form.as_p }}
+      <table>
+        {{ form.as_table }}
+      </table>
       <button type='submit' id='btn-submit'>Login</button>
     </form>
     <h3>If you do not have an account please <a href="{% url 'signup' %}">Signup</a></h3>
