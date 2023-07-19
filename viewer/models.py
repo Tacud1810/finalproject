@@ -74,9 +74,6 @@ class Book(models.Model):
 		return f"{self.name} - {self.get_author()} ({self.year})"
 
 
-
-
-
 class Comment(models.Model):
 	id_book = models.ForeignKey(
 		Book, on_delete=models.SET_NULL, null=True, blank=True, default=None
@@ -113,6 +110,7 @@ class OrderItem(models.Model):
 	def __str__(self):
 		return f"{self.cart.id} - {self.book} - {self.cart.user}"
 
+
 class Rented(models.Model):
 	id_book = models.ForeignKey(
 		Book, on_delete=models.SET_NULL, null=True, blank=True, default=None
@@ -121,7 +119,7 @@ class Rented(models.Model):
 		Person, on_delete=models.SET_NULL, null=True, blank=True, default=None
 	)
 	id_order = models.ForeignKey(Order, on_delete=models.SET_NULL, null=True, blank=True, default=None
-	)
+	                             )
 	rent_date = models.DateField(blank=True, null=True)
 	reservation_date = models.DateField(auto_now_add=True)
 	return_date = models.DateField(blank=True, null=True)
@@ -130,6 +128,8 @@ class Rented(models.Model):
 
 	def __str__(self):
 		return f"{self.id_book.name} - {self.id_user}"
+
+
 class Reserved(models.Model):
 	id_book = models.ForeignKey(Book, on_delete=models.SET_NULL, null=True, blank=True, default=None)
 	id_user = models.ForeignKey(Person, on_delete=models.SET_NULL, null=True, blank=True, default=None)
