@@ -89,7 +89,7 @@
               </script>
               <span class="date">Dnes je:</span></br>
               <span class="date" id="datum"></span>
-              <hr width="215px" align="left">
+              <hr width="115px" align="left">
               <h2 class="star">User Menu</h2>
               <ul class="sb_menu">
                 {% if user.is_authenticated %}
@@ -106,6 +106,7 @@
                   <li><a href="{% url 'genres' %}">Genres (new / edit / delete)</a></li>
                   <li><a href="{% url 'languages' %}">Languages (new / edit / delete)</a></li>
                   <li><a href="{% url 'booked' %}">Booked and rented books</a></li>
+                  <li><a href="{% url 'users' %}">Users</a></li>
                 {% endif %}
               </ul>
             </div>

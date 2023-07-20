@@ -23,7 +23,6 @@ class SignUpForm(UserCreationForm):
         user = super().save(commit)
         person = Person(user=user)
         if commit:
-            person.pay_to = (datetime.now() + timedelta(days=28))
             person.save()
         return user
 

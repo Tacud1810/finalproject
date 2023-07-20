@@ -8,7 +8,7 @@ from django.db.models import CASCADE
 
 class Person(models.Model):
 	user = models.OneToOneField(User, on_delete=CASCADE)
-	pay_to = models.DateField()
+	pay_to = models.DateField(null=True, blank=True)
 
 	def __str__(self):
 		return f"{self.user.username} - {self.user.first_name} {self.user.last_name}"
@@ -125,6 +125,8 @@ class Rented(models.Model):
 	return_date = models.DateField(blank=True, null=True)
 	returned = models.BooleanField(default=False, null=True, blank=True)
 	canceled = models.BooleanField(default=False)
+	return_to_date = models.DateField(blank=True, null=True)
+	extend = models.BooleanField(blank=True, null=True)
 
 	def __str__(self):
 		return f"{self.id_book.name} - {self.id_user}"
@@ -135,6 +137,7 @@ class Reserved(models.Model):
 	id_user = models.ForeignKey(Person, on_delete=models.SET_NULL, null=True, blank=True, default=None)
 	reservation_date = models.DateField(auto_now_add=True)
 	email_sent = models.BooleanField(default=False, null=True, blank=True)
+	canceled = models.BooleanField(default=False)
 
 	def __str__(self):
 		return f"{self.id_book.name} - {self.id_user}"

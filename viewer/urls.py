@@ -43,4 +43,8 @@ urlpatterns = [
     path('booked/', booked, name='booked'),
     path('change_booked/', change_booked, name='change_booked'),
 
+    path('users/', UsersView.as_view(), name='users'),
+    path('user/<pk>/', user_page, name='user_page'),
+
+
 ]

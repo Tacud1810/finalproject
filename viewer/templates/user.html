@@ -1,0 +1,46 @@
+{% extends 'index.html' %}
+
+{% block content %}
+  <h2>
+    <span>
+      username: {{ user.user.username }}
+    </span>
+  </h2>
+  <table class="table">
+    <tr><td rowspan="10"><img src=" {{ book.image }} " width=200px></a></td></tr>
+    <tr><td class="td_bold">Jméno:</td><td> {{ user.user.first_name }} {{ user.user.last_name }}</td></tr>
+    <tr><td class="td_bold">Zaplaceno do:</td><td> {{ user.pay_to }} </td></tr>
+
+    <tr>
+      <td>
+        {% if user.is_authenticated %}
+          {% if book.amount > 0 %}
+            <button data-product={{book.id}} data-action="add" class="update-cart">
+              Borrow
+            </button>
+          {% else %}
+            <button data-product={{book.id}} data-action="reserve" class="update-cart">
+              Reserve
+            </button>
+          {% endif %}
+        {% else %}
+          You have to be <button >Login</button>
+        {% endif %}
+      </td>
+      <td class="td_right" colspan="2">
+        {% if user.is_staff %}
+          <a href="#">edit</a>
+          <a href="#">delete</a></td>
+      </tr>
+        {% endif %}
+  </table>
+<hr>
+
+  <table class="table">
+    <tr>
+      <td class="td_bold" style="width: 20px; vertical-align: top;">Popis:</td>
+      <td>{{ book.description }}</td>
+    </tr>
+  </table>
+
+{% endblock %}

@@ -32,7 +32,15 @@
   <h2>Authors:</h2>
     <ul>
     {% for author in authors %}
-      <li><a href="{% url 'author' author.id %}">{{ author }}</li>
+      <li><a href="{% url 'author' author.id %}">{{ author }}</a></li>
+    {% empty %}
+      <i>Nothing found</i>
+    {% endfor %}
+    </ul>
+  <h2>Users:</h2>
+    <ul>
+    {% for user in users %}
+      <li><a href="{% url 'user_page' user.id %}">{{ user }}</a></li>
     {% empty %}
       <i>Nothing found</i>
     {% endfor %}

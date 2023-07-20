@@ -13,15 +13,20 @@
     <tr><td class="td_bold">ISBN:</td><td> {{ book.isbn }} </td></tr>
     <tr>
       <td>
-        {% if user.is_authenticated %}
-          {% if book.amount > 0 %}
-            <button data-product={{book.id}} data-action="add" class="update-cart">
-              Borrow
-            </button>
+
+        {% if request.user.is_authenticated %}
+          {% if user.person.pay_to is None or user.person.pay_to < date.today %}
+            You have to pay membership
           {% else %}
-            <button data-product={{book.id}} data-action="reserve" class="update-cart">
-              Reserve
-            </button>
+            {% if book.amount > 0 %}
+              <button data-product={{book.id}} data-action="add" class="update-cart">
+                Borrow
+              </button>
+            {% else %}
+              <button data-product={{book.id}} data-action="reserve" class="update-cart">
+                Reserve
+              </button>
+            {% endif %}
           {% endif %}
         {% else %}
           You have to be <button >Login</button>
@@ -30,9 +35,12 @@
       <td class="td_right" colspan="2">
         {% if user.is_staff %}
           <a href="{% url 'book_update' book.id %}">edit</a>
-          <a href="{% url 'book_delete' book.id %}">delete</a></td></tr>
+          <a href="{% url 'book_delete' book.id %}">delete</a></td>
         {% endif %}
-  </table><hr>
+    </tr>
+
+  </table>
+<hr>
 
   <table class="table">
     <tr>

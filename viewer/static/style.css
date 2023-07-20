@@ -146,7 +146,7 @@ a.com span {
 	margin:0;
 	padding:0;
 	float:left;
-	width:654px;
+	width:754px;
 }
 .content .mainbar img {
 	padding:7px;
@@ -171,7 +171,7 @@ a.com span {
 
 .article table{
 	background-color:#C7B67B;
-	width: 38rem;
+	width: 44rem;
 }
 
 .article td{
@@ -199,11 +199,11 @@ a.com span {
 .content .sidebar {
 	padding:0;
 	float:right;
-	width:300px;
+	width:230px;
 }
 .content .sidebar .gadget {
 	margin:0;
-	padding:8px 16px 8px 40px;
+	padding:8px 16px 8px 20px;
 }
 
 .date {
