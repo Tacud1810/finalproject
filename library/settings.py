@@ -45,7 +45,8 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
-    'middleware.YourMiddleware',
+    'middleware.StatisticMiddleware',
+    'middleware.MostRentedBooksMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',

@@ -120,7 +120,7 @@
     <div class="fbg">
       <div class="fbg_resize">
         <div class="col c1">
-          <h2>Statistic</h2>
+          <h3>Statistic</h3>
           <table>
             <tr><td>Total books:</td><td> {{ request.book_sum }}</td></tr>
             <tr><td>Total authors:</td><td> {{ request.author_sum }}</td></tr>
@@ -131,12 +131,19 @@
         </div>
 
         <div class="col c2">
-          <h2>Free content</h2>
-          ???
+          <h3>The most Rented</h3>
+          <table>
+            {% for book in request.most_rented_books %}
+              <tr>
+                <td width="100em"><a href="{% url 'book' book.id %}"> {{ book.name }} </a></td>
+                <td> {{ book.num_rented }} × </td>
+              </tr>
+            {% endfor %}
+          </table>
         </div>
 
         <div class="col c3">
-          <h2><span>Contact</span></h2>
+          <h3><span>Contact</span></h3>
           <table>
             <tr><td>Knihovna s.r.o.</td></tr>
             <tr><td>WEB: <a href="{% url 'home' %}">www.library.cz</a></td></tr>
@@ -153,7 +160,7 @@
     <div class="footer">
       <div class="footer_resize">
         <p class="lr">Copyright &copy; 2023 <a href="">SDA Python team n. 3</a> - All Rights Reserved</p>
-        <p class="lf">Design by <a href="">Jane & Karl & Richi & Martin</a></p>
+        <p class="lf">Design by <a href="">Jane & Karl & Richi & Marty</a></p>
         <div class="clr"></div>
       </div>
     </div>

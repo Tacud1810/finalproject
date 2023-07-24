@@ -1,7 +1,9 @@
+from django.db.models import Count
+
 from viewer.models import Book, Author, Reserved, Rented, Person
 
 
-class YourMiddleware:
+class StatisticMiddleware:
     def __init__(self, get_response):
         self.get_response = get_response
 
@@ -14,3 +16,20 @@ class YourMiddleware:
 
         response = self.get_response(request)
         return response
+
+
+class MostRentedBooksMiddleware:
+    def __init__(self, get_response):
+        self.get_response = get_response
+
+    def __call__(self, request):
+        request.most_rented_books = Book.objects.annotate(num_rented=Count('rented')).order_by('-num_rented')[:5]
+        response = self.get_response(request)
+        return response
+
+
+
+
+
+
+
