@@ -1,7 +1,7 @@
 from django.contrib import admin
-from django.urls import path
+from django.urls import path, include
+from viewer.views import *
 
-from .views import *
 
 urlpatterns = [
     path('', new_books, name='home'),
@@ -45,6 +45,13 @@ urlpatterns = [
 
     path('users/', UsersView.as_view(), name='users'),
     path('user/<pk>/', user_page, name='user_page'),
+    path('user_booked/<pk>/', user_booked, name='user_booked'),
+
+    path('change_membership/', change_membership, name='change_membership'),
+
+    path('book_rate/<id_book>/<rating>/', rate_book, name='rate_book'),
+    path('delete_rating/<id_book>/', delete_rating, name='delete_rating'),
+    path('delete_comment/<book_id>/<user_id>/', delete_comment, name='delete_comment'),
 
 
 ]

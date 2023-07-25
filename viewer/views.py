@@ -4,6 +4,7 @@ from datetime import datetime, timedelta
 from django import forms
 from django.core.exceptions import ValidationError
 from django.core.paginator import Paginator
+from django.db.models import Avg
 from django.db.transaction import atomic
 from django.forms import ModelForm, ModelMultipleChoiceField
 from django.http import JsonResponse
@@ -11,7 +12,7 @@ from django.shortcuts import render, redirect
 from django.urls import reverse_lazy
 from django.utils import timezone
 from django.views.generic import TemplateView, CreateView, UpdateView, DeleteView
-from viewer.models import Book, Genre, Author, Language, Order, OrderItem, Person, Reserved, Rented
+from viewer.models import Book, Genre, Author, Language, Order, OrderItem, Person, Reserved, Rented, Rating, Comment
 from django.contrib.auth.decorators import login_required
 
 
@@ -191,8 +192,87 @@ class BookDeleteView(LoginRequiredMixin, DeleteView):
 
 def book(request, pk):
 	book = Book.objects.get(id=pk)
-	context = {'book': book}
+
+	if request.method == 'POST':
+		new_comment = request.POST.get('comment')
+
+		# první varianta aktualizace komentáře
+		"""
+        if Comment.objects.filter(movie=movie, user=user).count() > 0:  # pokud již komentář existuje
+            user_comment = Comment.objects.get(movie=movie, user=user)
+            user_comment.comment = new_comment  # tak komentář aktualizujeme
+            user_comment.save()
+        else:  # pokud uživatel zadává první komentář k tomuto filmu
+            Comment.objects.create(movie=movie, user=user, comment=new_comment)
+        """
+
+		# druhá (lepší) varianta aktualizace komentáře
+		person=Person.objects.get(user=request.user)
+		user_comment = Comment.objects.get_or_create(id_book=book, id_user=person)[0]
+		user_comment.comment = new_comment
+		user_comment.save()
+	comments = Comment.objects.filter(id_book=book)
+	context = {'book': book, 'comments': comments}  # alebo id_book?
 	return render(request, template_name='book.html', context=context)
+
+
+def rate_book(request,id_book,rating):
+	book=Book.objects.get(pk=id_book)
+	user=Person.objects.get(id_user=request.user)
+	if Rating.objects.filter(id_book=book,id_user=user).count()>0:   #user.is_authenticated and
+		user_rating=Rating.objects.get(id_book=book,id_user=user)
+		user_rating.rating=rating
+		user_rating.save()
+		rating=user_rating.rating
+
+	else:
+		Rating.objects.create(id_book=book,id_user=user,rating=rating)
+		#book=Book.objects.filter(id_book)
+		#rating=None
+		avg_rating=Rating.objects.filter(id_book=book).aggregate(Avg('rating'))
+		#Rating.objects.create(id_book=book,id_user=user,rating=rating)
+		context={'book':book,'rating':rating,'avg_rating':avg_rating['rating__avg']}
+
+	return render(request,template_name='book.html',context=context)
+
+
+def delete_rating(request,id_book,rating):
+	book=Book.objects.get(pk=id_book)
+	user=request.user
+	if Rating.objects.filter(id_book=book,id_user=user).count()>0:
+		user_rating=Rating.objects.get(id_book=book,id_user=user)
+		user_rating.delete
+	#book=Book.objects.filter(id_book=book)
+	#rating=None
+	context = {'book':book,'rating':rating}
+	return render(request,template_name='book.html',context=context)
+
+	#comments=Comment.objects.filter(id_book=book)
+	#avg_rating=Rating.objects.filter(id_book=book).aggregate(Avg('rating'))
+	#context={'book'=book,'rating'=rating,'avg_rating:avg_rating['rating__avg'],'comment':comment]
+	#returnrender(request,template_name='book.html',context=context)
+
+
+def delete_comment(request,id_book,id_user,rating):
+	book=Book.objects.get(id=id_book)
+	user=Person.objects.get(pk=id_book)
+
+	if Comment.objects.filter(id_book=book,id_user=user).count() > 0:
+		user_comment=Comment.objects.get(id_book=book,id_user=user)
+		user_comment.delete()
+
+	#book=Book.objects.filter(id_book=book)
+	#rating=None
+
+	comments=Comment.objects.filter(id_book=book)
+
+	avg_rating=Rating.objects.filter(id_book=book).aggregate(Avg('rating'))
+	# rating=None
+	# Rating.objects.create(id_book=book,id_user=user,rating=rating)
+
+	# context={'book':book,'rating':rating,'avg_rating':avg_rating['rating__avg'],'comments':comments}
+
+	# return render(request,template_name='book.html',context=context)
 
 
 class UsersView(TemplateView):
@@ -212,6 +292,12 @@ def user_page(request, pk):
 	user = Person.objects.get(id=pk)
 	context = {'user': user}
 	return render(request, template_name='user.html', context=context)
+
+def user_booked(request, pk):
+	user = Person.objects.get(id=pk)
+	context = {'user': user}
+	return render(request, template_name='user_booked.html', context=context)
+
 
 
 def author(request, pk):
@@ -381,9 +467,6 @@ def update_item(request):
 	book = Book.objects.get(id=book_id)
 	order, created = Order.objects.get_or_create(user=customer, complete=False)
 	order_item, created = OrderItem.objects.get_or_create(cart=order, book=book)
-	print(order)
-	print(order_item.book.name)
-	print(book.name)
 	if action == 'add':
 		if not OrderItem.objects.filter(cart=order, book=book).exists():
 			if book.amount > 0:
@@ -454,4 +537,17 @@ def change_booked(request):
 		rented.extend = True
 		rented.save()
 
+	return JsonResponse('Item was changed', safe=False)
+
+
+def change_membership(request):
+	data = json.loads(request.body)
+	user_id = data['user_id']
+	user = Person.objects.get(user=user_id)
+	if user.pay_to:
+		user.pay_to = user.pay_to + timedelta(days=365)
+		user.save()
+	else:
+		user.pay_to = datetime.now() + timedelta(days=365)
+		user.save()
 	return JsonResponse('Item was changed', safe=False)

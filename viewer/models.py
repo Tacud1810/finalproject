@@ -5,7 +5,6 @@ from django.db.models import CASCADE
 
 # Create your models here.
 
-
 class Person(models.Model):
 	user = models.OneToOneField(User, on_delete=CASCADE)
 	pay_to = models.DateField(null=True, blank=True)
@@ -73,17 +72,8 @@ class Book(models.Model):
 	def __str__(self):
 		return f"{self.name} - {self.get_author()} ({self.year})"
 
-
-class Comment(models.Model):
-	id_book = models.ForeignKey(
-		Book, on_delete=models.SET_NULL, null=True, blank=True, default=None
-	)
-	id_user = models.ForeignKey(
-		Person, on_delete=models.SET_NULL, null=True, blank=True, default=None
-	)
-	comment = models.TextField()
-	created = models.DateTimeField(auto_now_add=True)
-	updated = models.DateTimeField(auto_now=True)
+	# def __str__(self):
+		# return f"{self.book.title} - {self.user.username}: {self.comment[:50]}"
 
 
 class Order(models.Model):
@@ -111,15 +101,25 @@ class OrderItem(models.Model):
 		return f"{self.cart.id} - {self.book} - {self.cart.user}"
 
 
+class Comment(models.Model):
+	id_book = models.ForeignKey(Book, on_delete=models.SET_NULL, null=True, blank=True, default=None)
+	id_user = models.ForeignKey(Person, on_delete=models.SET_NULL, null=True, blank=True, default=None)
+	comment = models.TextField()
+	created = models.DateTimeField(auto_now_add=True)
+	updated = models.DateTimeField(auto_now=True)
+
+	class Meta:
+		ordering = ['id_book', '-created']
+		# ordering = ['-created-at']
+
+	def __str__(self):
+		return f"{self.id_book.name} - {self.id_user.user.username}: {self.comment[:50]}"
+
+
 class Rented(models.Model):
-	id_book = models.ForeignKey(
-		Book, on_delete=models.SET_NULL, null=True, blank=True, default=None
-	)
-	id_user = models.ForeignKey(
-		Person, on_delete=models.SET_NULL, null=True, blank=True, default=None
-	)
-	id_order = models.ForeignKey(Order, on_delete=models.SET_NULL, null=True, blank=True, default=None
-	                             )
+	id_book = models.ForeignKey(Book, on_delete=models.SET_NULL, null=True, blank=True, default=None)
+	id_user = models.ForeignKey(Person, on_delete=models.SET_NULL, null=True, blank=True, default=None)
+	id_order = models.ForeignKey(Order, on_delete=models.SET_NULL, null=True, blank=True, default=None)
 	rent_date = models.DateField(blank=True, null=True)
 	reservation_date = models.DateField(auto_now_add=True)
 	return_date = models.DateField(blank=True, null=True)
@@ -148,12 +148,8 @@ class Reserved(models.Model):
 
 class Rating(models.Model):
 	id_order = models.ForeignKey(Order, on_delete=models.SET_NULL, null=True, blank=True)
-	id_book = models.ForeignKey(
-		Book, on_delete=models.SET_NULL, null=True, blank=True, default=None
-	)
-	id_user = models.ForeignKey(
-		Person, on_delete=models.SET_NULL, null=True, blank=True, default=None
-	)
+	id_book = models.ForeignKey(Book, on_delete=models.SET_NULL, null=True, blank=True, default=None)
+	id_user = models.ForeignKey(Person, on_delete=models.SET_NULL, null=True, blank=True, default=None)
 	rating = models.PositiveIntegerField(null=True, blank=True)
 	created = models.DateTimeField(auto_now_add=True)
 	updated = models.DateTimeField(auto_now=True)
