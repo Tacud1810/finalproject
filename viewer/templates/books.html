@@ -4,10 +4,10 @@
 <h2><span>Knihy:</span> </h2>
 {% for book in books %}
   <table class="table">
-    <tr><td rowspan="6"><a href="{% url 'book' book.id %}"> <img src="{{ book.image }}" width=130px></a></td></tr>
+    <tr><td rowspan="6"><a href="{% url 'book' book.id %}"> <img src="{{ book.image }}" width=90px></a></td></tr>
     <tr><td class="td_bold">Název:</td><td> {{ book.name }}</td></tr>
     <tr><td class="td_bold">Originální název:</td><td> {{ book.original_name }}</td></tr>
-    <tr><td class="td_bold">Autor:</td><td><a href="{% url 'author' book.get_author_id %}"> {{ book.get_author }}</td></tr>
+    <tr><td class="td_bold">Autor:</td><td><a href="{% url 'author' book.get_author_id %}"> {{ book.get_author }}</a></td></tr>
     <tr><td class="td_bold">Rok:</td><td> {{ book.year }}</td></tr>
     <tr><td class="td_right" colspan="2">
     {% if user.is_staff %}

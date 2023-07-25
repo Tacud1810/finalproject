@@ -45,6 +45,9 @@ urlpatterns = [
 
     path('users/', UsersView.as_view(), name='users'),
     path('user/<pk>/', user_page, name='user_page'),
+    path('user_booked/<pk>/', user_booked, name='user_booked'),
+
+    path('change_membership/', change_membership, name='change_membership'),
 
 
 ]

@@ -213,6 +213,12 @@ def user_page(request, pk):
 	context = {'user': user}
 	return render(request, template_name='user.html', context=context)
 
+def user_booked(request, pk):
+	user = Person.objects.get(id=pk)
+	context = {'user': user}
+	return render(request, template_name='user_booked.html', context=context)
+
+
 
 def author(request, pk):
 	author = Author.objects.get(id=pk)
@@ -381,9 +387,6 @@ def update_item(request):
 	book = Book.objects.get(id=book_id)
 	order, created = Order.objects.get_or_create(user=customer, complete=False)
 	order_item, created = OrderItem.objects.get_or_create(cart=order, book=book)
-	print(order)
-	print(order_item.book.name)
-	print(book.name)
 	if action == 'add':
 		if not OrderItem.objects.filter(cart=order, book=book).exists():
 			if book.amount > 0:
@@ -454,4 +457,17 @@ def change_booked(request):
 		rented.extend = True
 		rented.save()
 
+	return JsonResponse('Item was changed', safe=False)
+
+
+def change_membership(request):
+	data = json.loads(request.body)
+	user_id = data['user_id']
+	user = Person.objects.get(user=user_id)
+	if user.pay_to:
+		user.pay_to = user.pay_to + timedelta(days=365)
+		user.save()
+	else:
+		user.pay_to = datetime.now() + timedelta(days=365)
+		user.save()
 	return JsonResponse('Item was changed', safe=False)

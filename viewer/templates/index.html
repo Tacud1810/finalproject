@@ -66,9 +66,9 @@
                 {% block content %}
                   <h2><span>Novinky:</span></h2>
                     {% for book in books %}
-                    {% if forloop.counter <= 10 %}
+                    {% if forloop.counter <= 12 %}
                       <a href="{% url 'book' book.id %}">
-                      <img src="{{ book.image }}" width = 16% height= 140 px>
+                      <img src="{{ book.image }}" width = 13% height= 140 px>
                       </a>
                     {% else %}
 
@@ -92,15 +92,16 @@
               <hr width="115px" align="left">
               <h2 class="star">User Menu</h2>
               <ul class="sb_menu">
-                {% if user.is_authenticated %}
-                  You are log in as: <strong> {{user}} </strong>
+                {% if request.user.is_authenticated %}
+                  You are log in as: <strong> {{ user.user.username }} </strong>
+                  <li><a href="{% url 'user_booked' user.id %}">Orders</a></li>
                 {% else %}
                   You should <a href="{% url 'login' %}">Log In</a> or <a href="{% url 'signup' %}">Sign Up</a>
                 {% endif %}
-                {% if user.is_superuser %}
+                {% if request.user.is_superuser %}
                   <li><a href="/admin/" target="_blank">Admin page</a></li>
                 {% endif %}
-                {% if user.is_staff %}
+                {% if request.user.is_staff %}
                   <li><a href="{% url 'new_book' %}">New book</a></li>
                   <li><a href="{% url 'authors_ad' %}">Authors (new / edit / delete)</a></li>
                   <li><a href="{% url 'genres' %}">Genres (new / edit / delete)</a></li>

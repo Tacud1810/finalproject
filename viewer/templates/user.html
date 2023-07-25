@@ -10,29 +10,12 @@
     <tr><td rowspan="10"><img src=" {{ book.image }} " width=200px></a></td></tr>
     <tr><td class="td_bold">Jméno:</td><td> {{ user.user.first_name }} {{ user.user.last_name }}</td></tr>
     <tr><td class="td_bold">Zaplaceno do:</td><td> {{ user.pay_to }} </td></tr>
-
-    <tr>
+    <tr><td class="td_bold">Prodloužit členství:</td>
       <td>
-        {% if user.is_authenticated %}
-          {% if book.amount > 0 %}
-            <button data-product={{book.id}} data-action="add" class="update-cart">
-              Borrow
-            </button>
-          {% else %}
-            <button data-product={{book.id}} data-action="reserve" class="update-cart">
-              Reserve
-            </button>
-          {% endif %}
-        {% else %}
-          You have to be <button >Login</button>
-        {% endif %}
+        <button data-product={{user.user.id}} data-action="extend_membership" class="confirm-btn">Prodloužit
+        </button>
       </td>
-      <td class="td_right" colspan="2">
-        {% if user.is_staff %}
-          <a href="#">edit</a>
-          <a href="#">delete</a></td>
-      </tr>
-        {% endif %}
+    </tr>
   </table>
 <hr>
 
@@ -42,5 +25,52 @@
       <td>{{ book.description }}</td>
     </tr>
   </table>
+
+<script>
+    // Funkce pro zobrazení potvrzovacího dialogu
+    function confirmAction(event) {
+        event.preventDefault();
+        var action = this.dataset.action;
+        var message = "Opravdu si to přejete?";
+        if (confirm(message)) {
+            var user_id = this.dataset.product;
+            console.log('Action:', action, 'UserID:', user_id);
+            updateUserMembership(user_id)
+            // Zde můžete provést další akce po potvrzení
+            // Například volání funkce pro aktualizaci
+            // updateBooked(book_id, action);
+        }
+    }
+    function updateUserMembership(user_id) {
+      var url = '/change_membership/'
+      fetch(url, {
+        method: 'POST',
+        headers:{
+            'Content-Type': 'application/json',
+            'X-CSRFToken': csrftoken,
+        },
+        body:JSON.stringify({'user_id': user_id,})
+    })
+        .then((response) =>{
+            return response.json()
+        })
+        .then((data) =>{
+            console.log('data: ', data)
+            location.reload()
+        })
+
+    }
+
+
+
+
+
+    // Připojení události click na tlačítka s třídou 'confirm-btn'
+    var confirmBtns = document.getElementsByClassName('confirm-btn');
+    for (var i = 0; i < confirmBtns.length; i++) {
+        confirmBtns[i].addEventListener('click', confirmAction);
+    }
+</script>
+
 
 {% endblock %}
