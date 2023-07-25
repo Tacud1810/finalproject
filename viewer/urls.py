@@ -51,7 +51,7 @@ urlpatterns = [
 
     path('book_rate/<id_book>/<rating>/', rate_book, name='rate_book'),
     path('delete_rating/<id_book>/', delete_rating, name='delete_rating'),
-    path('delete_comment/<book_id>/<user_id>/', delete_comment, name='delete_comment'),
+    path('delete_comment/<id_book>/<id_user>/', delete_comment, name='delete_comment'),
 
 
 ]

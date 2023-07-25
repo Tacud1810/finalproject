@@ -253,9 +253,9 @@ def delete_rating(request,id_book,rating):
 	#returnrender(request,template_name='book.html',context=context)
 
 
-def delete_comment(request,id_book,id_user,rating):
+def delete_comment(request,id_book,id_user):
 	book=Book.objects.get(id=id_book)
-	user=Person.objects.get(pk=id_book)
+	user=Person.objects.get(user=id_user)
 
 	if Comment.objects.filter(id_book=book,id_user=user).count() > 0:
 		user_comment=Comment.objects.get(id_book=book,id_user=user)
@@ -266,13 +266,14 @@ def delete_comment(request,id_book,id_user,rating):
 
 	comments=Comment.objects.filter(id_book=book)
 
-	avg_rating=Rating.objects.filter(id_book=book).aggregate(Avg('rating'))
-	# rating=None
+	rating=None
 	# Rating.objects.create(id_book=book,id_user=user,rating=rating)
+	if user.user.is_authenticated and Rating.objects.filter(id_book=book, id_user=user).count()>0:
+		rating=Rating.objects.get(id_book=book, id_user=user)
+	avg_rating=Rating.objects.filter(id_book=book).aggregate(Avg('rating'))
+	context={'book':book,'rating':rating,'avg_rating':avg_rating['rating__avg'],'comments':comments}
 
-	# context={'book':book,'rating':rating,'avg_rating':avg_rating['rating__avg'],'comments':comments}
-
-	# return render(request,template_name='book.html',context=context)
+	return render(request,template_name='book.html',context=context)
 
 
 class UsersView(TemplateView):
