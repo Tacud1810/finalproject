@@ -150,3 +150,13 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 LOGIN_REDIRECT_URL = 'home'
 LOGOUT_REDIRECT_URL = 'home'
+
+
+# Nastavení pro SMTP server:
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.seznam.cz'          # Adresa vašeho SMTP serveru
+EMAIL_PORT = 25                         # Port vašeho SMTP serveru (často 587 nebo 465)
+EMAIL_USE_TLS = False                     # True, pokud používáte TLS, jinak False
+EMAIL_USE_SSL = False                    # False, pokud nepoužíváte SSL, jinak True
+EMAIL_HOST_USER = 'sdalibrary@seznam.cz'    # E-mailová adresa pro autentizaci na SMTP serveru
+EMAIL_HOST_PASSWORD = 'library123456'         # Heslo pro autentizaci na SMTP serveru
