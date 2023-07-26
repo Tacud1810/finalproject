@@ -253,7 +253,7 @@ def delete_rating(request,id_book,rating):
 	#returnrender(request,template_name='book.html',context=context)
 
 
-def delete_comment(request,id_book,id_user):
+def delete_comment(request,id_book,id_user,):
 	book=Book.objects.get(id=id_book)
 	user=Person.objects.get(user=id_user)
 
@@ -291,12 +291,15 @@ class UsersView(TemplateView):
 
 def user_page(request, pk):
 	user = Person.objects.get(id=pk)
-	context = {'user': user}
+	orders = Order.objects.filter(user=user).order_by('-id')
+	context = {'user': user, 'orders': orders}
 	return render(request, template_name='user.html', context=context)
 
 def user_booked(request, pk):
 	user = Person.objects.get(id=pk)
-	context = {'user': user}
+	orders = Order.objects.filter(user=user).order_by('-id')
+
+	context = {'user': user, 'orders': orders}
 	return render(request, template_name='user_booked.html', context=context)
 
 

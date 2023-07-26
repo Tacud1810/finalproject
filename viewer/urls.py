@@ -5,6 +5,7 @@ from viewer.views import *
 
 urlpatterns = [
     path('', new_books, name='home'),
+    path('index/', new_books, name='home'),
     path('new_books/', new_books, name='new_books'),
     path('authors/', authors, name='authors'),
     path('genres/', genres, name='genres'),

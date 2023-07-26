@@ -20,10 +20,19 @@
 <hr>
 
   <table class="table">
+    {% for order in orders %}
     <tr>
-      <td class="td_bold" style="width: 20px; vertical-align: top;">Popis:</td>
-      <td>{{ book.description }}</td>
+      <td class="td_bold" style="vertical-align: top; ">Order: {{order.id }} </td>
+      <td></td>
     </tr>
+    {% for order_item in order.orderitem_set.all %}
+    <tr>
+      <td style="width: 100px"></td>
+      <td><a href="{% url 'book' order_item.book.id %}"> {{ order_item.book.name }}{{order.user}}</a></td>
+      <td>{{ order_item.book.get_author}}</td>
+    </tr>
+    {% endfor %}
+    {% endfor %}
   </table>
 
 <script>

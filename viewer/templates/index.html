@@ -89,7 +89,7 @@
               <h2 class="star">User Menu</h2>
               <ul class="sb_menu">
                 {% if request.user.is_authenticated %}
-                  You are log in as: <strong> {{ user.user.username }} </strong>
+                  You are log in as: <strong> {{ request.user.username }} </strong>
                   <li><a href="{% url 'user_booked' user.id %}">Orders</a></li>
                 {% else %}
                   You should <a href="{% url 'login' %}">Log In</a> or <a href="{% url 'signup' %}">Sign Up</a>
