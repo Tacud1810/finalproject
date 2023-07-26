@@ -14,12 +14,12 @@
     <tr>
       <td>
 
-        {% if request.user.is_authenticated %}
+        {% if user.is_authenticated %}
           {% if user.person.pay_to is None or user.person.pay_to < date.today %}
             You have to pay membership
           {% else %}
             {% if book.amount > 0 %}
-              <button data-product={{book.id}} data-action="add" class="update-cart">
+              <button data-product={{book.id}} data-user={{request.user.id}} data-action="add" class="update-cart">
                 Borrow
               </button>
             {% else %}

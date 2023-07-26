@@ -461,11 +461,12 @@ def cart(request):
 	return render(request, 'cart.html', context)
 
 
-# @atomic
+@atomic
 def update_item(request):
 	data = json.loads(request.body)
 	book_id = data['book_id']
 	action = data['action']
+	# person = data['person']
 
 	customer = request.user.person
 	book = Book.objects.get(id=book_id)
