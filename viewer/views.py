@@ -513,13 +513,18 @@ def change_booked(request):
 	data = json.loads(request.body)
 	book_id = data['book_id']
 	order_id = data['order_id']
-	action = data['action']
-	customer = request.user.person
-	book = Book.objects.get(id=book_id)
-	order = Order.objects.filter(id=order_id, user=customer, complete=True, orderitem__book=book).first()
-	orderitem = OrderItem.objects.get(cart=order_id, book=book)
 
-	rented = Rented.objects.get(id_order=order.id, id_book=book, id_user=customer)
+	action = data['action']
+	customer = data['person']
+	book = Book.objects.get(id=book_id)
+	# order = Order.objects.filter(id=order_id, user=customer, complete=True, orderitem__book=book).first()
+	# print(order)
+	order = Order.objects.get(id=order_id)
+	orderitem = OrderItem.objects.get(cart=order_id, book=book)
+	print(order_id)
+	print(book)
+	print(customer)
+	rented = Rented.objects.get(id_order=order_id, id_book=book, id_user=customer)
 
 	if action == 'cancel':
 		rented.canceled = True
