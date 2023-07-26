@@ -24,6 +24,7 @@ class BookModelTest(TestCase):
             description="Báseňjezoškolskéhoprostredia.OtomakosaškolákoviJankovispravívzošitemachuľa...",
             language="Slovenský",
             isbn=15
+
             )
 
     def test_name(self):
