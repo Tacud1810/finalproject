@@ -2,6 +2,10 @@ from django.contrib.auth.models import User
 from django.db import models
 from django.db.models import CASCADE, ImageField
 
+from django.core.mail import send_mail
+from django.db.models.signals import post_save
+from django.dispatch import receiver
+
 
 # Create your models here.
 
@@ -73,7 +77,22 @@ class Book(models.Model):
 		return f"{self.name} - {self.get_author()} ({self.year})"
 
 	# def __str__(self):
-		# return f"{self.book.title} - {self.user.username}: {self.comment[:50]}"
+	# return f"{self.book.title} - {self.user.username}: {self.comment[:50]}"
+
+
+@receiver(post_save, sender=Book)
+def notify_book_amount_change(instance, **kwargs):
+	if instance.amount > 0:
+		subject = f'Kniha "{instance.name}" k dispozici'
+		message = f'Požadovaná kniha "{instance.name}" je k dispozici v počtu {instance.amount}.'
+		reserves = Reserved.objects.filter(id_book=instance.id, email_sent=False)
+
+		for reserve in reserves:
+			from_email = 'sdalibrary@seznam.cz'
+			recipient_list = [reserve.id_user.user.email]
+			send_mail(subject, message, from_email, recipient_list)
+			reserve.email_sent = True
+			reserve.save()
 
 
 class Order(models.Model):

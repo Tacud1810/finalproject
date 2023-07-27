@@ -42,13 +42,13 @@
           {% if rented_item.canceled %}
             Canceled
           {% else %}
-          <button data-product={{rented_item.id_book.id}} data-cart={{rented_item.id_order.id}} data-action="cancel" class="update-booked">
+          <button data-product={{rented_item.id_book.id}} data-user={{rented_item.id_user.user.id}} data-order={{rented_item.id_order.id}} data-action="cancel" class="update-booked">
             Cancel
           </button>
           {% endif %}
         {% endif %}
         {% if rented_item.rent_date and not rented_item.return_date and not rented_item.extend %}
-          <button data-product={{rented_item.id_book.id}} data-cart={{rented_item.id_order.id}} data-action="extend" class="update-booked">
+          <button data-product={{rented_item.id_book.id}} data-user={{rented_item.id_user.user.id}} data-order={{rented_item.id_order.id}} data-action="extend" class="update-booked">
             Extend
           </button>
         {% endif %}
@@ -72,16 +72,17 @@
         if (confirm(message)) {
             var book_id = this.dataset.product;
             var action = this.dataset.action;
-            var order_id = this.dataset.cart;
-            console.log('Action:', action, 'BookID:', book_id);
-            updateBooked(book_id, action, order_id)
+            var order_id = this.dataset.order;
+            var user1 = this.dataset.user;
+            console.log('Action:', action, 'BookID:', book_id, 'OrderID:', order_id, 'user:', user1);
+            updateBooked(book_id, action, order_id, user1)
             // Zde můžete provést další akce po potvrzení
             // Například volání funkce pro aktualizaci
             // updateBooked(book_id, action);
         }
     }
 
-function updateBooked(book_id, action, order_id){
+function updateBooked(book_id, action, order_id, user1){
     console.log('Sending data...')
 
     var url = '/change_booked/'
@@ -92,7 +93,7 @@ function updateBooked(book_id, action, order_id){
             'Content-Type': 'application/json',
             'X-CSRFToken': csrftoken,
         },
-        body:JSON.stringify({'book_id': book_id, 'action': action, 'order_id': order_id})
+        body:JSON.stringify({'book_id': book_id, 'action': action, 'order_id': order_id, 'person': user1})
     })
         .then((response) =>{
             return response.json()
