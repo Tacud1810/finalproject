@@ -24,9 +24,13 @@
                 Borrow
               </button>
             {% else %}
+              {% if reserved %}
+                  You have already reserved this book
+              {% else %}
               <button data-product={{book.id}} data-action="reserve" class="update-cart">
                 Reserve
               </button>
+              {% endif %}
             {% endif %}
           {% endif %}
         {% else %}

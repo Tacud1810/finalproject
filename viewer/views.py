@@ -192,27 +192,17 @@ class BookDeleteView(LoginRequiredMixin, DeleteView):
 
 def book(request, pk):
 	book = Book.objects.get(id=pk)
-
+	person = Person.objects.get(user=request.user)
 	if request.method == 'POST':
 		new_comment = request.POST.get('comment')
 
-		# první varianta aktualizace komentáře
-		"""
-        if Comment.objects.filter(movie=movie, user=user).count() > 0:  # pokud již komentář existuje
-            user_comment = Comment.objects.get(movie=movie, user=user)
-            user_comment.comment = new_comment  # tak komentář aktualizujeme
-            user_comment.save()
-        else:  # pokud uživatel zadává první komentář k tomuto filmu
-            Comment.objects.create(movie=movie, user=user, comment=new_comment)
-        """
-
-		# druhá (lepší) varianta aktualizace komentáře
-		person=Person.objects.get(user=request.user)
+		# person=Person.objects.get(user=request.user)
 		user_comment = Comment.objects.get_or_create(id_book=book, id_user=person)[0]
 		user_comment.comment = new_comment
 		user_comment.save()
 	comments = Comment.objects.filter(id_book=book)
-	context = {'book': book, 'comments': comments}
+	reserved = Reserved.objects.filter(id_book=book, id_user=person, email_sent=False)
+	context = {'book': book, 'comments': comments, 'reserved': reserved}
 	return render(request, template_name='book.html', context=context)
 
 
@@ -480,11 +470,13 @@ def update_item(request):
 			book.amount -= 1
 			book.save()
 	if action == 'remove':
+		order_item = OrderItem.objects.get(cart=order, book=book)
 		order_item.delete()
 		book.amount += 1
 		book.save()
 	if action == "reserve":
-		book, created = Reserved.objects.get_or_create(id_user=customer, id_book=book)
+		reserve = Reserved.objects.create(id_user=customer, id_book=book)
+		reserve.save
 
 	return JsonResponse('Item was added', safe=False)
 
@@ -518,13 +510,8 @@ def change_booked(request):
 	action = data['action']
 	customer = data['person']
 	book = Book.objects.get(id=book_id)
-	# order = Order.objects.filter(id=order_id, user=customer, complete=True, orderitem__book=book).first()
-	# print(order)
 	order = Order.objects.get(id=order_id)
 	orderitem = OrderItem.objects.get(cart=order_id, book=book)
-	print(order_id)
-	print(book)
-	print(customer)
 	rented = Rented.objects.get(id_order=order_id, id_book=book, id_user=customer)
 
 	if action == 'cancel':
