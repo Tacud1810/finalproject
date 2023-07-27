@@ -54,6 +54,9 @@ urlpatterns = [
     path('delete_comment/<id_book>/<id_user>/', delete_comment, name='delete_comment'),
 
     path('genre/<pk>/', genre, name='genre'),
+    path('reservations/<pk>/', reservations, name='reservations'),
+    path('change_reservation/', change_reservation, name='change_reservation'),
+
 
 
 ]

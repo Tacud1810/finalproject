@@ -34,7 +34,7 @@
     <div class="header">
       <div class="header_resize">
         <div class="logo">
-          <h1><a href="index.html">online<span>Library</span></a> <small>our books 4 U</small></h1>
+          <h1><a href="{% url 'home' %}">online<span>Library</span></a> <small>our books 4 U</small></h1>
         </div>
   <!-- MENU -->
         {% include 'nav_menu.html' %}
@@ -94,9 +94,11 @@
                   You are log in as: <strong> {{ user.username }} </strong>
                   <li><a href="{% url 'logout' %}">Logout</a></li>
                   <li><a href="{% url 'user_booked' user.id %}">Orders</a></li>
+                  <li><a href="{% url 'reservations' user.id %}">Reservations</a></li>
                 {% else %}
                   You should <a href="{% url 'login' %}">Log In</a> or <a href="{% url 'signup' %}">Sign Up</a>
                 {% endif %}
+                <hr>
                 {% if request.user.is_superuser %}
                   <li><a href="/admin/" target="_blank">Admin page</a></li>
                 {% endif %}

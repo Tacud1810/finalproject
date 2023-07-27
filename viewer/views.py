@@ -38,16 +38,6 @@ def authors(request):
 	return render(request, template_name='authors.html', context=context)
 
 
-def genres(request):
-	genres_list = Genre.objects.all()
-	paginator = Paginator(genres_list, 20)
-	page_number = request.GET.get('page')
-	page_obj = paginator.get_page(page_number)
-
-	context = {'genres': page_obj}
-	return render(request, template_name='genres.html', context=context)
-
-
 def authors_ad(request):
 	authors_list = Author.objects.all()
 	context = {'authors': authors_list}
@@ -125,34 +115,6 @@ class BookForm(ModelForm):
 		return page
 
 
-# def clean_isbn(self):
-# 	cleaned_data = super().clean()
-# 	isbn = cleaned_data.get('isbn')
-# 	isbn = isbn.replace('-', '')
-# 	if len(isbn) not in (10, 13):
-# 		raise ValidationError('Enter correct ISBN length')
-# 	if len(isbn) == 10:
-# 		if not isbn[:-1].isdigit() or isbn[-1] not in '0123456789X':
-# 			raise ValidationError('Enter correct ISBN')
-# 	elif len(isbn) == 13:
-# 		if not isbn.isdigit():
-# 			raise ValidationError('Enter correct ISBN')
-# 	return isbn
-
-
-"""
-    Validace ISBN:
-    - odstranit pomlčky, mezery a jiné oddělovače
-    - zkontrolovat délku ISBN, povolené délky jsou 10 a 13 znaků
-    - ISBN-10 má 9 čísel a 1 kontrolní číslo (může být i 'X')
-    - ISBN-13 má 12 čísel a 1 kontrolní číslo
-    - pro ISBN-10 spočítat kontrolní číslo: vynásobit prvních 9 čísel koeficienty od 10 do 2 a sečíst je, výsledek vydělit modulo 11, zjistit zbytek, pokud je zbytek 10, kontrolní číslo je 'X', jinak by se mělo výsledné číslo rovnat zbytku
-    - pro ISBN-13 spočítat kontrolní číslo. vynásobit prvních 12 čísel střídavě koeficienty 1 a 3 a sečíst je, výsledek vydělit modulo 10 a odečíst z 10 zbytek, získaný výsledek by se měl rovnat kontrolnímu číslu
-    - porovnat vypočtené kontrolní číslo s posledním  číslem ISBN, pokud se shodují, ISBN je platné
-    - nebo v Djangu využít existující knihovnu "isbnlib"
-    """
-
-
 class LoginRequiredMixin:
 	@classmethod
 	def as_view(cls, **kwargs):
@@ -204,16 +166,6 @@ def book(request, pk):
 	else:
 		context = {'book': book, 'comments': comments, 'avg_rating': avg_rating['rating__avg']}
 	return render(request, template_name='book.html', context=context)
-
-
-def genre(request, pk):
-	books = Book.objects.filter(genre=pk).order_by('name')
-	paginator = Paginator(books, 10)
-	page_number = request.GET.get('page')
-	page_obj = paginator.get_page(page_number)
-
-	context = {'books': page_obj}
-	return render(request, template_name='genre.html', context=context)
 
 
 def rate_book(request, id_book, rating):
@@ -352,6 +304,26 @@ class AuthorDeleteView(LoginRequiredMixin, DeleteView):
 	template_name = 'author_delete_confirm.html'
 	model = Author
 	success_url = reverse_lazy('authors_ad')
+
+
+def genres(request):
+	genres_list = Genre.objects.all()
+	paginator = Paginator(genres_list, 20)
+	page_number = request.GET.get('page')
+	page_obj = paginator.get_page(page_number)
+
+	context = {'genres': page_obj}
+	return render(request, template_name='genres.html', context=context)
+
+
+def genre(request, pk):
+	books = Book.objects.filter(genre=pk).order_by('name')
+	paginator = Paginator(books, 10)
+	page_number = request.GET.get('page')
+	page_obj = paginator.get_page(page_number)
+
+	context = {'books': page_obj}
+	return render(request, template_name='genre.html', context=context)
 
 
 class GenreForm(ModelForm):
@@ -511,6 +483,13 @@ def booked(request):
 	return render(request, template_name="booked.html", context=context)
 
 
+def reservations(request, pk):
+	user = Person.objects.get(id=pk)
+	reservations = Reserved.objects.filter(id_user=user).order_by('-id')
+	context = {'user': user, 'reservations': reservations}
+	return render(request, template_name='reservations.html', context=context)
+
+
 @atomic
 def change_booked(request):
 	data = json.loads(request.body)
@@ -558,4 +537,14 @@ def change_membership(request):
 	else:
 		user.pay_to = datetime.now() + timedelta(days=365)
 		user.save()
+	return JsonResponse('Item was changed', safe=False)
+
+
+def change_reservation(request):
+	data = json.loads(request.body)
+	user_id = data['person']
+	book_id = data['book_id']
+	reservation = Reserved.objects.get(id_book=book_id, id_user=user_id, email_sent=False, canceled=False)
+	reservation.canceled = True
+	reservation.save()
 	return JsonResponse('Item was changed', safe=False)
