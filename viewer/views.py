@@ -471,13 +471,14 @@ def update_item(request):
 	customer = request.user.person
 	book = Book.objects.get(id=book_id)
 	order, created = Order.objects.get_or_create(user=customer, complete=False)
-	order_item, created = OrderItem.objects.get_or_create(cart=order, book=book)
+
 	if action == 'add':
-		if not OrderItem.objects.filter(cart=order, book=book).exists():
-			if book.amount > 0:
-				order_item.save()
-				book.amount -= 1
-				book.save()
+		if book.amount > 0:
+			if not OrderItem.objects.filter(cart=order, book=book).exists():
+				order_item, created = OrderItem.objects.get_or_create(cart=order, book=book)
+			order_item.save()
+			book.amount -= 1
+			book.save()
 	if action == 'remove':
 		order_item.delete()
 		book.amount += 1
