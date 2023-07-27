@@ -28,18 +28,6 @@ def new_books(request):
 	return render(request, template_name='index.html', context=context)
 
 
-# class NewBookView(TemplateView):
-# 	template_name = "index.html"
-# 	book_list = Book.objects.all()
-# 	genres_list = Genre.objects.all()
-# 	extra_context = {'books': book_list, 'genres': genres_list}
-#
-# 	def get_context_data(self, **kwargs):
-# 		context = super().get_context_data(**kwargs)
-# 		context["books"] = Book.objects.all()
-# 		return context
-
-
 def authors(request):
 	author_list = Author.objects.all()
 	context = {'authors': author_list}
@@ -67,13 +55,6 @@ def languages(request):
 def conditions(request):
 	return render(request, template_name='conditions.html')
 
-
-# def books(request):
-# 	book_list = Book.objects.all()
-# 	genre_list = Genre.objects.all()
-# 	author_list = Author.objects.all()
-# 	context = {'books': book_list, 'genre': genre_list, 'author': author_list}
-# 	return render(request, template_name='books.html', context=context)
 
 class BooksView(TemplateView):
 	template_name = 'books.html'
@@ -191,89 +172,81 @@ class BookDeleteView(LoginRequiredMixin, DeleteView):
 
 
 def book(request, pk):
-    book = Book.objects.get(id=pk)
+	book = Book.objects.get(id=pk)
+	user = request.user
 
-    person = Person.objects.get(user=request.user)
 
-    if request.method == 'POST':
-        new_comment = request.POST.get('comment')
-        # person=Person.objects.get(user=request.user)
-        user_comment = Comment.objects.get_or_create(id_book=book, id_user=person)[0]
-        user_comment.comment = new_comment
-        user_comment.save()
-    comments = Comment.objects.filter(id_book=book)
-    reserved = Reserved.objects.filter(id_book=book, id_user=person, email_sent=False)
-    context = {'book': book, 'comments': comments, 'reserved': reserved}
-    return render(request, template_name='book.html', context=context)
-    """
-    book = Book.objects.get(id=pk)
+	if request.method == 'POST':
+		person = Person.objects.get(user=request.user)
+		new_comment = request.POST.get('comment')
+		user_comment = Comment.objects.get_or_create(id_book=book, id_user=person)[0]
+		user_comment.comment = new_comment
+		user_comment.save()
+	comments = Comment.objects.filter(id_book=book)
+	# rating = Rating.objects.get(id_book=book, id_user=person)
+	# avg_rating = Rating.objects.filter(id_book=book).aggregate(Avg('rating'))
+	if user.is_authenticated:
+		person = Person.objects.get(user=request.user)
+		reserved = Reserved.objects.filter(id_book=book, id_user=person, email_sent=False)
+		context = {'book': book, 'comments': comments, 'reserved': reserved}
+	else:
+		context = {'book': book, 'comments': comments}
+	return render(request, template_name='book.html', context=context)
 
-    if request.method == 'POST':
-        new_comment = request.POST.get('comment')
-        # new_rating = request.POST.get('rating') # pridane
 
-        person = Person.objects.get(user=request.user)
-        user_comment = Comment.objects.get_or_create(id_book=book, id_user=person)[0]
-        user_comment.comment = new_comment
-        user_comment.save()
+def genre(request, pk):
+	genres = Book.objects.filter(genre=pk)
+	context = {'genres': genres}
+	return render(request, template_name='genre.html', context=context)
 
-        # user_rating = Rating.objects.ger_or_create(id_book=book, id_user=person)[0]
-        # user_rating.rating = new_rating
-        # user_rating.save()
-
-    comments = Comment.objects.filter(id_book=book)
-    # avg_rating = Rating.objects.filter(id_book=book).aggregate(Avg('rating'))  # pridane
-
-    # rate_book(request, book.id, new_rating, new_comment)
-    context = {'book': book, 'comments': comments}
-
-    return render(request, template_name='book.html', context=context)
-"""
 
 def rate_book(request, id_book, rating):
-    book = Book.objects.get(pk=id_book)
-    user = Person.objects.get(user=request.user)
-    if Rating.objects.filter(id_book=book, id_user=user).count() > 0:
-        user_rating = Rating.objects.get(id_book=book, id_user=user)
-        user_rating.rating = rating
-        user_rating.save()
-        rating = user_rating.rating
+	book = Book.objects.get(pk=id_book)
+	user = Person.objects.get(user=request.user)
+	if Rating.objects.filter(id_book=book, id_user=user).count() > 0:
+		user_rating = Rating.objects.get(id_book=book, id_user=user)
+		user_rating.rating = rating
+		user_rating.save()
+		rating = user_rating.rating
 
-    else:
-        Rating.objects.create(id_book=book, id_user=user, rating=rating)  # zapisem to do databazy novy zaznam
-    # book=Book.objects.filter(id_book)
-    # rating=None  # teraz osm zakomentovala
-    comments = Comment.objects.filter(id_book=book)
+	else:
+		user_rating = Rating.objects.create(id_book=book, id_user=user, rating=rating)  # zapisem to do databazy novy zaznam
+		user_rating.save()
+	# book=Book.objects.filter(id_book)
+	# rating=None  # teraz osm zakomentovala
+	comments = Comment.objects.filter(id_book=book)
 
-    avg_rating = Rating.objects.filter(id_book=book).aggregate(Avg('rating'))
-    # Rating.objects.create(id_book=book,id_user=user,rating=rating)
-    context = {'book': book, 'rating': rating, 'avg_rating': avg_rating['rating__avg'], 'comments': comments}
+	avg_rating = Rating.objects.filter(id_book=book).aggregate(Avg('rating'))
+	# Rating.objects.create(id_book=book,id_user=user,rating=rating)
+	context = {'book': book, 'rating': rating, 'avg_rating': avg_rating['rating__avg'], 'comments': comments}
 
-	return render(request,template_name='book.html',context=context)
+	return render(request, template_name='book.html', context=context)
 
 
 def delete_rating(request, id_book):
-    book = Book.objects.get(pk=id_book)
-    user = Person.objects.get(user=request.user)
+	book = Book.objects.get(pk=id_book)
+	user = Person.objects.get(user=request.user)
 
-    if Rating.objects.filter(id_book=book, id_user=user).count() > 0:
-        user_rating = Rating.objects.get(id_book=book, id_user=user)
-        user_rating.delete()
-    # book=Book.objects.filter(id_book=book)
-    rating = None
+	if Rating.objects.filter(id_book=book, id_user=user).count() > 0:
+		user_rating = Rating.objects.get(id_book=book, id_user=user)
+		user_rating.delete()
+	# book=Book.objects.filter(id_book=book)
+	rating = None
 
-    comments = Comment.objects.filter(id_book=book)
+	comments = Comment.objects.filter(id_book=book)
 
-    avg_rating = Rating.objects.filter(id_book=book).aggregate(Avg('rating'))
+	avg_rating = Rating.objects.filter(id_book=book).aggregate(Avg('rating'))
 
-    context = {'book': book, 'rating': rating, 'avg_rating': avg_rating['rating__avg'], 'comments': comments}  # pridane avg + comments
+	context = {'book': book, 'rating': rating, 'avg_rating': avg_rating['rating__avg'],
+	           'comments': comments}  # pridane avg + comments
 
-    return render(request, template_name='book.html', context=context)
+	return render(request, template_name='book.html', context=context)
 
-	#comments=Comment.objects.filter(id_book=book)
-	#avg_rating=Rating.objects.filter(id_book=book).aggregate(Avg('rating'))
-	#context={'book'=book,'rating'=rating,'avg_rating:avg_rating['rating__avg'],'comment':comment]
-	#returnrender(request,template_name='book.html',context=context)
+
+# comments=Comment.objects.filter(id_book=book)
+# avg_rating=Rating.objects.filter(id_book=book).aggregate(Avg('rating'))
+# context={'book'=book,'rating'=rating,'avg_rating:avg_rating['rating__avg'],'comment':comment]
+# returnrender(request,template_name='book.html',context=context)
 
 
 def delete_comment(request, id_book, id_user):
@@ -281,21 +254,21 @@ def delete_comment(request, id_book, id_user):
 	user = Person.objects.get(user=id_user)
 
 	if Comment.objects.filter(id_book=book, id_user=user).count() > 0:
-		user_comment=Comment.objects.get(id_book=book, id_user=user)
+		user_comment = Comment.objects.get(id_book=book, id_user=user)
 		user_comment.delete()
 
-	#book=Book.objects.filter(id_book=book)
-	#rating=None
+	# book=Book.objects.filter(id_book=book)
+	# rating=None
 
-	comments=Comment.objects.filter(id_book=book)
+	comments = Comment.objects.filter(id_book=book)
 
-    rating = None
+	rating = None
 
-    # Rating.objects.create(id_book=book,id_user=user,rating=rating)
-    if user.user.is_authenticated and Rating.objects.filter(id_book=book, id_user=user).count() > 0:
-        rating = Rating.objects.get(id_book=book, id_user=user)
-    avg_rating = Rating.objects.filter(id_book=book).aggregate(Avg('rating'))
-    context = {'book': book, 'rating': rating, 'avg_rating': avg_rating['rating__avg'], 'comments': comments}
+	# Rating.objects.create(id_book=book,id_user=user,rating=rating)
+	if user.user.is_authenticated and Rating.objects.filter(id_book=book, id_user=user).count() > 0:
+		rating = Rating.objects.get(id_book=book, id_user=user)
+	avg_rating = Rating.objects.filter(id_book=book).aggregate(Avg('rating'))
+	context = {'book': book, 'rating': rating, 'avg_rating': avg_rating['rating__avg'], 'comments': comments}
 
 	return render(request, template_name='book.html', context=context)
 
@@ -319,13 +292,13 @@ def user_page(request, pk):
 	context = {'user': user, 'orders': orders}
 	return render(request, template_name='user.html', context=context)
 
+
 def user_booked(request, pk):
 	user = Person.objects.get(id=pk)
 	orders = Order.objects.filter(user=user).order_by('-id')
 
 	context = {'user': user, 'orders': orders}
 	return render(request, template_name='user_booked.html', context=context)
-
 
 
 def author(request, pk):
@@ -452,27 +425,27 @@ class LanguageDeleteView(LoginRequiredMixin, DeleteView):
 
 
 def search(request):
-    if request.method == 'POST':
-        pattern = request.POST.get('editbox_search').strip()
-        if len(pattern) > 0:
-            books_name = Book.objects.filter(name__contains=pattern)
-            books_original_name = Book.objects.filter(original_name__contains=pattern)
-            books_description = Book.objects.filter(description__contains=pattern)
-            authors = Author.objects.filter(name__contains=pattern)
-            genres = Genre.objects.filter(name__contains=pattern)
-            users = Person.objects.filter(user__first_name__icontains=pattern) \
-                    or Person.objects.filter(user__last_name__icontains=pattern) \
-                    or Person.objects.filter(user__username__icontains=pattern)
-            persons = Person.objects.filter()
-            context = {'pattern': pattern,
-                       'books_name': books_name,
-                       'books_original_name': books_original_name,
-                       'books_description': books_description,
-                       'authors': authors,
-                       'genres': genres,
-                       'users': users}
-            return render(request, template_name='search.html', context=context)
-    return render(request, 'index.html')
+	if request.method == 'POST':
+		pattern = request.POST.get('editbox_search').strip()
+		if len(pattern) > 0:
+			books_name = Book.objects.filter(name__contains=pattern)
+			books_original_name = Book.objects.filter(original_name__contains=pattern)
+			books_description = Book.objects.filter(description__contains=pattern)
+			authors = Author.objects.filter(name__contains=pattern)
+			genres = Genre.objects.filter(name__contains=pattern)
+			users = Person.objects.filter(user__first_name__icontains=pattern) \
+			        or Person.objects.filter(user__last_name__icontains=pattern) \
+			        or Person.objects.filter(user__username__icontains=pattern)
+			persons = Person.objects.filter()
+			context = {'pattern': pattern,
+			           'books_name': books_name,
+			           'books_original_name': books_original_name,
+			           'books_description': books_description,
+			           'authors': authors,
+			           'genres': genres,
+			           'users': users}
+			return render(request, template_name='search.html', context=context)
+	return render(request, 'index.html')
 
 
 def cart(request):
@@ -494,25 +467,25 @@ def update_item(request):
 	action = data['action']
 	# person = data['person']
 
-    customer = request.user.person
-    book = Book.objects.get(id=book_id)
-    order, created = Order.objects.get_or_create(user=customer, complete=False)
+	customer = request.user.person
+	book = Book.objects.get(id=book_id)
+	order, created = Order.objects.get_or_create(user=customer, complete=False)
 
-    if action == 'add':
-        if book.amount > 0:
-            if not OrderItem.objects.filter(cart=order, book=book).exists():
-                order_item, created = OrderItem.objects.get_or_create(cart=order, book=book)
-            order_item.save()
-            book.amount -= 1
-            book.save()
-    if action == 'remove':
-        order_item = OrderItem.objects.get(cart=order, book=book)
-        order_item.delete()
-        book.amount += 1
-        book.save()
-    if action == "reserve":
-        reserve = Reserved.objects.create(id_user=customer, id_book=book)
-        reserve.save
+	if action == 'add':
+		if book.amount > 0:
+			if not OrderItem.objects.filter(cart=order, book=book).exists():
+				order_item, created = OrderItem.objects.get_or_create(cart=order, book=book)
+			order_item.save()
+			book.amount -= 1
+			book.save()
+	if action == 'remove':
+		order_item = OrderItem.objects.get(cart=order, book=book)
+		order_item.delete()
+		book.amount += 1
+		book.save()
+	if action == "reserve":
+		reserve = Reserved.objects.create(id_user=customer, id_book=book)
+		reserve.save
 
 	return JsonResponse('Item was added', safe=False)
 
@@ -539,16 +512,16 @@ def booked(request):
 
 @atomic
 def change_booked(request):
-    data = json.loads(request.body)
-    book_id = data['book_id']
-    order_id = data['order_id']
+	data = json.loads(request.body)
+	book_id = data['book_id']
+	order_id = data['order_id']
 
-    action = data['action']
-    customer = data['person']
-    book = Book.objects.get(id=book_id)
-    order = Order.objects.get(id=order_id)
-    orderitem = OrderItem.objects.get(cart=order_id, book=book)
-    rented = Rented.objects.get(id_order=order_id, id_book=book, id_user=customer)
+	action = data['action']
+	customer = data['person']
+	book = Book.objects.get(id=book_id)
+	order = Order.objects.get(id=order_id)
+	orderitem = OrderItem.objects.get(cart=order_id, book=book)
+	rented = Rented.objects.get(id_order=order_id, id_book=book, id_user=customer)
 
 	if action == 'cancel':
 		rented.canceled = True

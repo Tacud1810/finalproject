@@ -53,5 +53,7 @@ urlpatterns = [
     path('delete_rating/<id_book>/', delete_rating, name='delete_rating'),
     path('delete_comment/<id_book>/<id_user>/', delete_comment, name='delete_comment'),
 
+    path('genre/<pk>/', genre, name='genre'),
+
 
 ]
