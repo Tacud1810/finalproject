@@ -172,3 +172,9 @@ class Rating(models.Model):
 	rating = models.PositiveIntegerField(null=True, blank=True)
 	created = models.DateTimeField(auto_now_add=True)
 	updated = models.DateTimeField(auto_now=True)
+
+	def get_rating(self):
+		return self.rating
+
+	def __str__(self):
+		return f"{self.id_user.user.username} - {self.id_book.name} - {self.rating}"

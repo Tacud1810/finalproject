@@ -56,37 +56,37 @@
 {% if request.user.is_authenticated %}
     <div class="book-user-rating">
       Rate:
-      {% if rating == 0 %}
+      {% if avg_rating == 0 %}
         <a href="{% url 'rate_book' book.id 0 %}">👎</a>
       {% else %}
         <a href="{% url 'rate_book' book.id 0 %}">🖓</a>
       {% endif %}
-      {% if rating > 0 %}
+      {% if avg_rating > 0 %}
         <a href="{% url 'rate_book' book.id 20 %}">⭐</a>
       {% else %}
         <a href="{% url 'rate_book' book.id 20 %}">☆</a>
       {% endif %}
-      {% if rating > 20 %}
+      {% if avg_rating > 20 %}
         <a href="{% url 'rate_book' book.id 40 %}">⭐</a>
       {% else %}
         <a href="{% url 'rate_book' book.id 40 %}">☆</a>
       {% endif %}
-      {% if rating > 40 %}
+      {% if avg_rating > 40 %}
         <a href="{% url 'rate_book' book.id 60 %}">⭐</a>
       {% else %}
         <a href="{% url 'rate_book' book.id 60 %}">☆</a>
       {% endif %}
-      {% if rating > 60 %}
+      {% if avg_rating > 60 %}
         <a href="{% url 'rate_book' book.id 80 %}">⭐</a>
       {% else %}
         <a href="{% url 'rate_book' book.id 80 %}">☆</a>
       {% endif %}
-      {% if rating > 80 %}
+      {% if avg_rating > 80 %}
         <a href="{% url 'rate_book' book.id 100 %}">⭐</a>
       {% else %}
         <a href="{% url 'rate_book' book.id 100 %}">☆</a>
       {% endif %}
-      {% if rating != None %}
+      {% if rating %}
         your rating is: {{ rating }}
         <a href="{% url 'delete_rating' book.id %}">delete your rate</a>
       {% else %}
@@ -94,6 +94,43 @@
       {% endif %}
       <br>
     </div>
+  {% else %}
+    <div class="book-user-rating">
+      Rating:
+      {% if avg_rating == 0 %}
+        👎
+      {% else %}
+
+      {% endif %}
+      {% if avg_rating > 0 %}
+        ⭐
+      {% else %}
+        ☆
+      {% endif %}
+      {% if avg_rating > 20 %}
+        ⭐
+      {% else %}
+        ☆
+      {% endif %}
+      {% if avg_rating > 40 %}
+        ⭐
+      {% else %}
+        ☆
+      {% endif %}
+      {% if avg_rating > 60 %}
+        ⭐
+      {% else %}
+        ☆
+      {% endif %}
+      {% if avg_rating > 80 %}
+        ⭐
+      {% else %}
+        ☆
+      {% endif %}
+     <br>
+    </div>
+
+
   {% endif %}
   <div class="book-avg-rating">
     {% if avg_rating != None %}

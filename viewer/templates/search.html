@@ -40,7 +40,7 @@
   <h3>Genres:</h3>
     <ul>
     {% for genre in genres %}
-      <li>{{ genre }}</li>
+      <li><a href="{% url 'genre' genre.id%}">{{ genre }}</a></li>
     {% empty %}
       <i>Nothing found</i>
     {% endfor %}

@@ -30,13 +30,21 @@ def new_books(request):
 
 def authors(request):
 	author_list = Author.objects.all()
-	context = {'authors': author_list}
+	paginator = Paginator(author_list, 15)
+	page_number = request.GET.get('page')
+	page_obj = paginator.get_page(page_number)
+
+	context = {'authors': page_obj}
 	return render(request, template_name='authors.html', context=context)
 
 
 def genres(request):
 	genres_list = Genre.objects.all()
-	context = {'genres': genres_list}
+	paginator = Paginator(genres_list, 20)
+	page_number = request.GET.get('page')
+	page_obj = paginator.get_page(page_number)
+
+	context = {'genres': page_obj}
 	return render(request, template_name='genres.html', context=context)
 
 
@@ -175,7 +183,6 @@ def book(request, pk):
 	book = Book.objects.get(id=pk)
 	user = request.user
 
-
 	if request.method == 'POST':
 		person = Person.objects.get(user=request.user)
 		new_comment = request.POST.get('comment')
@@ -184,19 +191,28 @@ def book(request, pk):
 		user_comment.save()
 	comments = Comment.objects.filter(id_book=book)
 	# rating = Rating.objects.get(id_book=book, id_user=person)
-	# avg_rating = Rating.objects.filter(id_book=book).aggregate(Avg('rating'))
+	avg_rating = Rating.objects.filter(id_book=book).aggregate(Avg('rating'))
 	if user.is_authenticated:
 		person = Person.objects.get(user=request.user)
+		rating = Rating.objects.filter(id_book=book, id_user=person)
+		if rating:
+			rating = Rating.objects.get(id_book=book, id_user=person)
+			rating = rating.rating
 		reserved = Reserved.objects.filter(id_book=book, id_user=person, email_sent=False)
-		context = {'book': book, 'comments': comments, 'reserved': reserved}
+		context = {'book': book, 'comments': comments, 'reserved': reserved, 'avg_rating': avg_rating['rating__avg'],
+		           'rating': rating}
 	else:
-		context = {'book': book, 'comments': comments}
+		context = {'book': book, 'comments': comments, 'avg_rating': avg_rating['rating__avg']}
 	return render(request, template_name='book.html', context=context)
 
 
 def genre(request, pk):
-	genres = Book.objects.filter(genre=pk)
-	context = {'genres': genres}
+	books = Book.objects.filter(genre=pk).order_by('name')
+	paginator = Paginator(books, 10)
+	page_number = request.GET.get('page')
+	page_obj = paginator.get_page(page_number)
+
+	context = {'books': page_obj}
 	return render(request, template_name='genre.html', context=context)
 
 
@@ -210,14 +226,11 @@ def rate_book(request, id_book, rating):
 		rating = user_rating.rating
 
 	else:
-		user_rating = Rating.objects.create(id_book=book, id_user=user, rating=rating)  # zapisem to do databazy novy zaznam
+		user_rating = Rating.objects.create(id_book=book, id_user=user, rating=rating)
 		user_rating.save()
-	# book=Book.objects.filter(id_book)
-	# rating=None  # teraz osm zakomentovala
 	comments = Comment.objects.filter(id_book=book)
 
 	avg_rating = Rating.objects.filter(id_book=book).aggregate(Avg('rating'))
-	# Rating.objects.create(id_book=book,id_user=user,rating=rating)
 	context = {'book': book, 'rating': rating, 'avg_rating': avg_rating['rating__avg'], 'comments': comments}
 
 	return render(request, template_name='book.html', context=context)
@@ -230,23 +243,15 @@ def delete_rating(request, id_book):
 	if Rating.objects.filter(id_book=book, id_user=user).count() > 0:
 		user_rating = Rating.objects.get(id_book=book, id_user=user)
 		user_rating.delete()
-	# book=Book.objects.filter(id_book=book)
 	rating = None
 
 	comments = Comment.objects.filter(id_book=book)
 
 	avg_rating = Rating.objects.filter(id_book=book).aggregate(Avg('rating'))
 
-	context = {'book': book, 'rating': rating, 'avg_rating': avg_rating['rating__avg'],
-	           'comments': comments}  # pridane avg + comments
+	context = {'book': book, 'rating': rating, 'avg_rating': avg_rating['rating__avg'], 'comments': comments}
 
 	return render(request, template_name='book.html', context=context)
-
-
-# comments=Comment.objects.filter(id_book=book)
-# avg_rating=Rating.objects.filter(id_book=book).aggregate(Avg('rating'))
-# context={'book'=book,'rating'=rating,'avg_rating:avg_rating['rating__avg'],'comment':comment]
-# returnrender(request,template_name='book.html',context=context)
 
 
 def delete_comment(request, id_book, id_user):
@@ -257,14 +262,10 @@ def delete_comment(request, id_book, id_user):
 		user_comment = Comment.objects.get(id_book=book, id_user=user)
 		user_comment.delete()
 
-	# book=Book.objects.filter(id_book=book)
-	# rating=None
-
 	comments = Comment.objects.filter(id_book=book)
 
 	rating = None
 
-	# Rating.objects.create(id_book=book,id_user=user,rating=rating)
 	if user.user.is_authenticated and Rating.objects.filter(id_book=book, id_user=user).count() > 0:
 		rating = Rating.objects.get(id_book=book, id_user=user)
 	avg_rating = Rating.objects.filter(id_book=book).aggregate(Avg('rating'))

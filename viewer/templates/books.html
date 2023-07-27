@@ -17,13 +17,16 @@
   </table><hr>
 {% endfor %}
 
+{% if books.paginator.num_pages == 1 %}
+
+{% else %}
 <table class="table">
   <tr><td>
     {% if books.has_previous %}
       <a href="?page={{ books.previous_page_number }}">Previous</a>
     {% endif %}
     </td>
-    <td class="td_center">
+    <td class="td_center" style="text-align: center" colspan="3">
     {% if books.number > 10 %}
       <a href="?page=1">1</a>
       <span class="ellipsis">...</span>
@@ -40,10 +43,11 @@
       <a href="?page={{ books.paginator.num_pages }}">{{ books.paginator.num_pages }}</a>
     {% endif %}
     </td>
-    <td class="td_right" colspan="3">
+    <td class="td_right">
     {% if books.has_next %}
       <a href="?page={{ books.next_page_number }}">Next</a>
     {% endif %}
     </td>
 </table>
+{% endif %}
  {% endblock %}

@@ -2,7 +2,7 @@
 {% block content %}
 
 <h2><span>Knihy:</span> </h2>
-{% for book in genres %}
+{% for book in books %}
   <table class="table">
     <tr><td rowspan="6"><a href="{% url 'book' book.id %}"> <img src="{{ book.image }}" width=90px></a></td></tr>
     <tr><td class="td_bold">Název:</td><td> {{ book.name }}</td></tr>
