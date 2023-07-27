@@ -37,6 +37,14 @@
       <i>Nothing found</i>
     {% endfor %}
     </ul>
+  <h3>Genres:</h3>
+    <ul>
+    {% for genre in genres %}
+      <li>{{ genre }}</li>
+    {% empty %}
+      <i>Nothing found</i>
+    {% endfor %}
+    </ul>
   <h3>Users:</h3>
     <ul>
     {% for user in users %}
