@@ -1,6 +1,6 @@
 @charset "utf-8";
 body {
-	margin:0;
+    margin:0;
 	padding:0;
 	width:100%;
 	color:#787460;
@@ -52,6 +52,7 @@ h1 small {
 	letter-spacing:normal;
 	text-transform:none;
 }
+
 h2 {
 	font:normal 24px/1.5em Arial, Helvetica, sans-serif;
 	padding:8px 0;
@@ -421,4 +422,3 @@ ol li .send {
 	border:none;
 	float:left;
 }
-

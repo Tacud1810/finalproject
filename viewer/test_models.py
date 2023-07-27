@@ -1,6 +1,6 @@
 from unittest import TestCase
 
-from git import objects
+# from git import objects
 
 from viewer.models import*
 
@@ -29,11 +29,11 @@ class BookModelTest(TestCase):
 
     def test_name(self):
         book=Book.objects.get(id=1)
-        self.assertEqual(book.name,"Machule")
+        self.assertEqual(book.name, "Machule")
 
     def test_year(self):
         book=Book.objects.get(id=1)
-        self.assertEqual(book.year,1956)
+        self.assertEqual(book.year, 1956)
 
     def test_language_str(self):
         language=Language.objects.get(id=1)

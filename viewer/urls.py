@@ -2,7 +2,6 @@ from django.contrib import admin
 from django.urls import path, include
 from viewer.views import *
 
-
 urlpatterns = [
     path('', new_books, name='home'),
     path('index/', new_books, name='home'),
