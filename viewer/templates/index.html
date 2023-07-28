@@ -66,7 +66,7 @@
                     {% for book in books %}
                     {% if forloop.counter <= 12 %}
                       <a href="{% url 'book' book.id %}">
-                      <img src="{{ book.image }}" width = 13% height= 140 px>
+                      <img id="new-book" src="{{ book.image }}" width = 13% height= 140 px>
                       </a>
                     {% else %}
 
@@ -92,11 +92,11 @@
               <ul class="sb_menu">
                 {% if request.user.is_authenticated %}
                   You are log in as: <strong> {{ user.username }} </strong>
-                  <li><a href="{% url 'logout' %}">Logout</a></li>
+                  <li><a href="{% url 'logout' %}" id="logout-btn">Logout</a></li>
                   <li><a href="{% url 'user_booked' user.id %}">Orders</a></li>
                   <li><a href="{% url 'reservations' user.id %}">Reservations</a></li>
                 {% else %}
-                  You should <a href="{% url 'login' %}">Log In</a> or <a href="{% url 'signup' %}">Sign Up</a>
+                  You should <a href="{% url 'login' %}" id="login-id">Log In</a> or <a href="{% url 'signup' %}" id="sign-up-btn">Sign Up</a>
                 {% endif %}
                 <hr>
                 {% if request.user.is_superuser %}
@@ -108,7 +108,7 @@
                   <li><a href="{% url 'genres' %}">Genres (new / edit / delete)</a></li>
                   <li><a href="{% url 'languages' %}">Languages (new / edit / delete)</a></li>
                   <li><a href="{% url 'booked' %}">Booked and rented books</a></li>
-                  <li><a href="{% url 'users' %}">Users</a></li>
+                  <li><a href="{% url 'users' %}" id="users-page">Users</a></li>
                 {% endif %}
               </ul>
             </div>

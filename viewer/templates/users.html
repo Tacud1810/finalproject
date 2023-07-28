@@ -5,7 +5,7 @@
 <ul>
     {% for user in users %}
       <blockquote>
-        <li><a href="{% url 'user_page' user.id %}">{{ user }}</a></li>
+        <li><a id="user-page" href="{% url 'user_page' user.id %}" >{{ user }}</a></li>
       </blockquote>
     {% endfor %}
 </ul>

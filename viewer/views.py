@@ -228,7 +228,7 @@ def delete_comment(request, id_book, id_user):
 
 class UsersView(TemplateView):
 	template_name = 'users.html'
-	users_list = Person.objects.all().order_by('user')
+	users_list = Person.objects.all().order_by('-id')
 	paginator = Paginator(users_list, 10)
 
 	def get_context_data(self, **kwargs):
