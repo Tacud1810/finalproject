@@ -241,7 +241,7 @@ class UsersView(TemplateView):
 
 def user_page(request, pk):
 	user = Person.objects.get(id=pk)
-	orders = Order.objects.filter(user=user).order_by('-id')
+	orders = Order.objects.filter(user=user, complete=True ).order_by('-id')
 	context = {'user': user, 'orders': orders}
 	return render(request, template_name='user.html', context=context)
 
