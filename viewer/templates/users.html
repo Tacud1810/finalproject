@@ -11,6 +11,9 @@
 </ul>
 
 
+{% if users.paginator.num_pages == 1 %}
+
+{% else %}
 <table class="table">
   <tr><td>
     {% if users.has_previous %}
@@ -40,4 +43,6 @@
     {% endif %}
     </td>
 </table>
+
+{% endif %}
  {% endblock %}

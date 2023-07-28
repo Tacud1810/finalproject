@@ -17,6 +17,11 @@
   </table><hr>
 {% endfor %}
 
+
+{% if books.paginator.num_pages == 1 %}
+
+{% else %}
+
 <table class="table">
   <tr><td>
     {% if books.has_previous %}
@@ -46,4 +51,5 @@
     {% endif %}
     </td>
 </table>
+{% endif %}
  {% endblock %}

@@ -91,9 +91,9 @@
               <h2 class="star">User Menu</h2>
               <ul class="sb_menu">
                 {% if request.user.is_authenticated %}
-                  You are log in as: <strong> {{ user.username }} </strong>
+                  You are log in as: <strong> {{ request.user.username }} </strong>
                   <li><a href="{% url 'logout' %}" id="logout-btn">Logout</a></li>
-                  <li><a href="{% url 'user_booked' user.id %}">Orders</a></li>
+                  <li><a id="orders" href="{% url 'user_booked' user.id %}">Orders</a></li>
                   <li><a href="{% url 'reservations' user.id %}">Reservations</a></li>
                 {% else %}
                   You should <a href="{% url 'login' %}" id="login-id">Log In</a> or <a href="{% url 'signup' %}" id="sign-up-btn">Sign Up</a>
